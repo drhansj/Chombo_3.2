@@ -1,0 +1,16 @@
+#it is prounouced eye-gore
+makefiles+=local/Make.defs.Phoenix
+USE_HDF=TRUE
+USE_MF=TRUE
+USE_EB=TRUE
+USE_64=TRUE
+CXX=/usr/bin/gcc
+CPP=/usr/bin/cpp
+FC=/usr/bin/gfortran
+MPICXX=/usr/local/bin/mpicc
+HDFINCFLAGS   = -I/home/rochi/libraries/hdf5-1.12.0/build_serial/include
+HDFLIBFLAGS   = -L/home/rochi/libraries/hdf5-1.12.0/build_serial/lib -lhdf5 -lhdf5_hl -ldl -lz
+HDFMPIINCFLAGS= -I/home/rochi/libraries/hdf5-1.12.0/build/include
+HDFMPILIBFLAGS= -L/home/rochi/libraries/hdf5-1.12.0/build/lib -lhdf5 -lhdf5_hl -ldl -lz
+
+

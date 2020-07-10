@@ -14,7 +14,7 @@ periodic_bc = 1 1 1
 #fixed_dt = 1.0
 
 max_level = 4
-n_cell =  128 128 128
+n_cell =  64 64 64
 ref_ratio = 2 2 2 2 2 2
 
 fixed_box_size = 32

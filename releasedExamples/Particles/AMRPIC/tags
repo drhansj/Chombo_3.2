@@ -1,0 +1,261 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+AMRLevelPIC	src/AMRLevelPIC.H	/^  AMRLevelPIC()$/;"	f	class:AMRLevelPIC
+AMRLevelPIC	src/AMRLevelPIC.H	/^AMRLevelPIC(const ZeldovichIBC* a_ibc,$/;"	f	class:AMRLevelPIC
+AMRLevelPIC	src/AMRLevelPIC.H	/^class AMRLevelPIC : public AMRLevel$/;"	c
+AMRLevelPICFactory	src/AMRLevelPICFactory.H	/^class AMRLevelPICFactory: public AMRLevelFactory$/;"	c
+AMRLevelPICFactory	src/AMRLevelPICFactory.cpp	/^AMRLevelPICFactory()$/;"	f	class:AMRLevelPICFactory
+AMRLevelPICFactory	src/AMRLevelPICFactory.cpp	/^AMRLevelPICFactory(const ZeldovichIBC*         a_ibc,$/;"	f	class:AMRLevelPICFactory
+CHOMBO_HOME	GNUmakefile	/^CHOMBO_HOME = ..\/..\/..\/lib$/;"	m
+CHOMBO_HOME	exec/GNUmakefile	/^CHOMBO_HOME = ..\/..\/..\/..\/lib$/;"	m
+Cosmology	src/Cosmology.H	/^  Cosmology(){}$/;"	f	class:Cosmology
+Cosmology	src/Cosmology.H	/^class Cosmology$/;"	c
+Cosmology	src/Cosmology.cpp	/^Cosmology::Cosmology(const Real& a_H0)$/;"	f	class:Cosmology
+FORTNT_INTERPOLATEINTIME	src/conveniencefort_F.H	26;"	d
+FORTRAN_NAME	src/conveniencefort_F.H	/^inline void FORTRAN_NAME(inlineINTERPOLATEINTIME, inlineINTERPOLATEINTIME)($/;"	f
+FORT_INTERPOLATEINTIME	src/conveniencefort_F.H	25;"	d
+GUARDINTERPOLATEINTIME	src/conveniencefort_F.H	12;"	d
+INPUT	exec/GNUmakefile	/^INPUT = inputs$/;"	m
+INTERPOLATEINTIME	exec/f/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.f	/^        subroutine INTERPOLATEINTIME(/;"	s
+JointParticle	src/JointParticle.H	/^class JointParticle : public Particle$/;"	c
+JointParticle	src/JointParticle.cpp	/^JointParticle::JointParticle()$/;"	f	class:JointParticle
+JointParticle	src/JointParticle.cpp	/^JointParticle::JointParticle(const Real&     a_mass,$/;"	f	class:JointParticle
+KDK_Corrector	src/PatchParticleI.H	/^void PatchParticle::KDK_Corrector(ListBox<P>&     a_listBox,$/;"	f	class:PatchParticle
+KDK_Pusher	src/PatchParticleI.H	/^Real PatchParticle::KDK_Pusher(ListBox<P>&     a_listBox,$/;"	f	class:PatchParticle
+KDK_PusherCoeff	src/PatchParticle.cpp	/^void PatchParticle::KDK_PusherCoeff(const Real& a_time, const Real& a_dt)$/;"	f	class:PatchParticle
+LevelParticle	src/LevelParticle.H	/^  LevelParticle(const LevelParticle& a_input)$/;"	f	class:LevelParticle
+LevelParticle	src/LevelParticle.H	/^class LevelParticle$/;"	c
+LevelParticle	src/LevelParticle.cpp	/^LevelParticle::LevelParticle()$/;"	f	class:LevelParticle
+LibNames	exec/GNUmakefile	/^LibNames = AMRElliptic AMRTimeDependent AMRTools BoxTools ParticleTools HOAMRTools$/;"	m
+NoOpBc	src/AMRLevelPIC.cpp	/^void NoOpBc(FArrayBox& a_state,$/;"	f
+PatchParticle	src/PatchParticle.H	/^  PatchParticle(const PatchParticle& a_input)$/;"	f	class:PatchParticle
+PatchParticle	src/PatchParticle.H	/^  PatchParticle(const ProblemDomain&     a_domain,$/;"	f	class:PatchParticle
+PatchParticle	src/PatchParticle.H	/^class PatchParticle$/;"	c
+PatchParticle	src/PatchParticle.cpp	/^PatchParticle::PatchParticle()$/;"	f	class:PatchParticle
+SOLVER_HANG	src/AMRLevelPIC.cpp	42;"	d	file:
+SOLVER_MAX_ITER	src/AMRLevelPIC.cpp	33;"	d	file:
+SOLVER_MIN_ITER	src/AMRLevelPIC.cpp	32;"	d	file:
+SOLVER_NORM_THRES	src/AMRLevelPIC.cpp	43;"	d	file:
+SOLVER_NORM_TYPE	src/AMRLevelPIC.cpp	31;"	d	file:
+SOLVER_NUM_MG	src/AMRLevelPIC.cpp	41;"	d	file:
+SOLVER_NUM_SMOOTH	src/AMRLevelPIC.cpp	40;"	d	file:
+SOLVER_RESET_PHI	src/AMRLevelPIC.cpp	30;"	d	file:
+SOLVER_TOLERANCE	src/AMRLevelPIC.cpp	35;"	d	file:
+SOLVER_TOLERANCE	src/AMRLevelPIC.cpp	37;"	d	file:
+ZeldovichIBC	src/ZeldovichIBC.H	/^class ZeldovichIBC$/;"	c
+ZeldovichIBC	src/ZeldovichIBC.cpp	/^ZeldovichIBC::ZeldovichIBC()$/;"	f	class:ZeldovichIBC
+ZeldovichIBC	src/ZeldovichIBC.cpp	/^ZeldovichIBC::ZeldovichIBC(const ProblemDomain& a_domain,$/;"	f	class:ZeldovichIBC
+_AMRLEVELPICFACTORY_H_	src/AMRLevelPICFactory.H	12;"	d
+_AMRLEVELPIC_H_	src/AMRLevelPIC.H	12;"	d
+_AMRPICUTILS_H_	src/AMRPICUtils.H	12;"	d
+_CONVENIENCEFORT_F_H_	src/conveniencefort_F.H	2;"	d
+_CONVENIENCE_H_	src/Convenience.H	12;"	d
+_COSMOLOGY_H_	src/Cosmology.H	12;"	d
+_JOINTPARTICLE_H_	src/JointParticle.H	12;"	d
+_LEVELPARTICLEI_H_	src/LevelParticleI.H	12;"	d
+_LEVELPARTICLE_H_	src/LevelParticle.H	12;"	d
+_PATCHPARTICLEI_H_	src/PatchParticleI.H	12;"	d
+_PATCHPARTICLE_H_	src/PatchParticle.H	12;"	d
+_ZELDOVICHIBC_H_	src/ZeldovichIBC.H	12;"	d
+a	src/Cosmology.cpp	/^Real Cosmology::a(const Real& a_time)$/;"	f	class:Cosmology
+addJointParticle	src/JointParticle.cpp	/^void JointParticle::addJointParticle(const JointParticle* const a_p)$/;"	f	class:JointParticle
+addParticle	src/JointParticle.cpp	/^void JointParticle::addParticle(const Particle* const a_p)$/;"	f	class:JointParticle
+adot	src/Cosmology.cpp	/^Real Cosmology::adot(const Real& a_time)$/;"	f	class:Cosmology
+advance	src/AMRLevelPIC.cpp	/^Real AMRLevelPIC::advance()$/;"	f	class:AMRLevelPIC
+aggregateParticles	src/AMRLevelPIC.cpp	/^aggregateParticles(ParticleData<JointParticle>& a_particles)$/;"	f	class:AMRLevelPIC
+amrPM	exec/amrPIC.cpp	/^void amrPM(const Real& a_stopTime,$/;"	f
+amrSync	src/AMRLevelPIC.cpp	/^void AMRLevelPIC::amrSync(const int a_baseLevel, const bool a_srceCorr)$/;"	f	class:AMRLevelPIC
+base_dir	exec/GNUmakefile	/^base_dir = .$/;"	m
+binmapParticles	src/Convenience.H	/^void binmapParticles(std::map<IntVect,JointParticle,CompIntVect>& a_mip,$/;"	f
+ch_timer	exec/f/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.f	55;"	c	subroutine:INTERPOLATEINTIME
+computeDt	src/AMRLevelPIC.cpp	/^computeDt()$/;"	f	class:AMRLevelPIC
+computeForce	src/AMRLevelPIC.cpp	/^void AMRLevelPIC::computeForce(LevelData<FArrayBox>&  a_force,$/;"	f	class:AMRLevelPIC
+computeInitialDt	src/AMRLevelPIC.cpp	/^computeInitialDt()$/;"	f	class:AMRLevelPIC
+correct	src/LevelParticleI.H	/^void LevelParticle::correct(ParticleData<P>&                a_levP,$/;"	f	class:LevelParticle
+correctState	src/PatchParticleI.H	/^void PatchParticle::correctState(ListBox<P>&     a_listBox,$/;"	f	class:PatchParticle
+countItems	src/AMRLevelPIC.cpp	/^int AMRLevelPIC::countItems() const$/;"	f	class:AMRLevelPIC
+countOutcast	src/AMRLevelPIC.cpp	/^int AMRLevelPIC::countOutcast() const$/;"	f	class:AMRLevelPIC
+define	src/AMRLevelPIC.H	/^virtual void define(AMRLevel*  a_coarserLevelPtr,$/;"	f	class:AMRLevelPIC
+define	src/AMRLevelPIC.cpp	/^define(const ZeldovichIBC*       a_ibc,$/;"	f	class:AMRLevelPIC
+define	src/AMRLevelPIC.cpp	/^void AMRLevelPIC::define(AMRLevel*            a_coarserLevelPtr,$/;"	f	class:AMRLevelPIC
+define	src/Cosmology.cpp	/^void Cosmology::define(const Real& a_H0)$/;"	f	class:Cosmology
+define	src/JointParticle.cpp	/^void JointParticle::define(const Real&     a_mass,$/;"	f	class:JointParticle
+define	src/LevelParticle.cpp	/^void LevelParticle::define(const ProblemDomain&     a_domain,$/;"	f	class:LevelParticle
+define	src/PatchParticle.cpp	/^void PatchParticle::define(const ProblemDomain&     a_domain,$/;"	f	class:PatchParticle
+define	src/ZeldovichIBC.cpp	/^void ZeldovichIBC::define(const ProblemDomain& a_domain,$/;"	f	class:ZeldovichIBC
+defineAMR	src/AMRPICUtils.cpp	/^defineAMR(AMR&                                 a_amr,$/;"	f
+defineEllipticSolvers	src/AMRLevelPIC.cpp	/^defineEllipticSolvers(const int a_baseLevel)$/;"	f	class:AMRLevelPIC
+deposit	src/PatchParticleI.H	/^void PatchParticle::deposit(FArrayBox&        a_rho,$/;"	f	class:PatchParticle
+ebase	exec/GNUmakefile	/^ebase = amrPIC$/;"	m
+ellipticSolver	src/AMRLevelPIC.cpp	/^void AMRLevelPIC::ellipticSolver(const int  a_baseLevel,$/;"	f	class:AMRLevelPIC
+exec_dirs	GNUmakefile	/^exec_dirs = exec$/;"	m
+getAMRHierarchy	src/AMRLevelPIC.cpp	/^getAMRHierarchy()$/;"	f	class:AMRLevelPIC
+getAMRLevelPICFactory	src/AMRPICUtils.cpp	/^getAMRLevelPICFactory(RefCountedPtr<AMRLevelPICFactory>&  a_fact,$/;"	f
+getAlpha	src/AMRLevelPIC.cpp	/^Real getAlpha(const Real a_tnew, const Real a_time, const Real a_dt)$/;"	f
+getCoarserLevel	src/AMRLevelPIC.cpp	/^getCoarserLevel() const$/;"	f	class:AMRLevelPIC
+getFinerLevel	src/AMRLevelPIC.cpp	/^getFinerLevel() const$/;"	f	class:AMRLevelPIC
+getMaxPartSpeed	src/LevelParticleI.H	/^Real LevelParticle::getMaxPartSpeed(const ParticleData<P>& a_levP,$/;"	f	class:LevelParticle
+getMaxPartSpeed	src/PatchParticleI.H	/^Real PatchParticle::getMaxPartSpeed(const ListBox<P>& a_listBox,$/;"	f	class:PatchParticle
+getMeshInterp	src/PatchParticle.cpp	/^MeshInterp* PatchParticle::getMeshInterp() const$/;"	f	class:PatchParticle
+getParticleIBC	src/AMRPICUtils.cpp	/^getParticleIBC()$/;"	f
+getPatchParticlePtr	src/LevelParticle.H	/^  PatchParticle* getPatchParticlePtr()$/;"	f	class:LevelParticle
+getPatchParticlePtrConst	src/LevelParticle.H	/^  const PatchParticle* getPatchParticlePtrConst() const$/;"	f	class:LevelParticle
+getPhi	src/AMRLevelPIC.cpp	/^LevelData<FArrayBox>* AMRLevelPIC::getPhi(const Real& a_time)$/;"	f	class:AMRLevelPIC
+getPoissonRhs	src/AMRLevelPIC.cpp	/^LevelData<FArrayBox>* AMRLevelPIC::getPoissonRhs(const Real& a_time)$/;"	f	class:AMRLevelPIC
+getProblemDomain	src/AMRPICUtils.cpp	/^getProblemDomain(ProblemDomain& a_domain)$/;"	f
+i	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^        integer ic,id,is, i,j$/;"	v
+i	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^      do i = iboxlo0,iboxhi0$/;"	v
+iboxhi0	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^      integer iboxhi0,iboxhi1$/;"	v
+iboxlo0	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^      integer iboxlo0,iboxlo1$/;"	v
+ic	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^        integer ic,id,is, i,j$/;"	v
+ic	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^      do ic = 0,sizeComp-1$/;"	v
+id	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^        integer ic,id,is, i,j$/;"	v
+initialData	src/AMRLevelPIC.cpp	/^initialData()$/;"	f	class:AMRLevelPIC
+initialGrid	src/AMRLevelPIC.cpp	/^initialGrid(const Vector<Box>& a_newGrids)$/;"	f	class:AMRLevelPIC
+initialize	src/ZeldovichIBC.cpp	/^void ZeldovichIBC::initialize(ParticleData<Particle>& a_data)$/;"	f	class:ZeldovichIBC
+interpOrder	src/PatchParticle.cpp	/^const InterpType& PatchParticle::interpOrder() const$/;"	f	class:PatchParticle
+interpolateInTime	src/Convenience.cpp	/^void interpolateInTime(LevelData<FArrayBox>&       a_phi,$/;"	f
+iphiNewhi0	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^      integer iphiNewhi0,iphiNewhi1$/;"	v
+iphiNewlo0	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^      integer iphiNewlo0,iphiNewlo1$/;"	v
+iphiOldhi0	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^      integer iphiOldhi0,iphiOldhi1$/;"	v
+iphiOldlo0	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^      integer iphiOldlo0,iphiOldlo1$/;"	v
+iphihi0	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^      integer iphihi0,iphihi1$/;"	v
+iphilo0	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^      integer iphilo0,iphilo1$/;"	v
+is	exec/p/2d.Linux.64.mpicc.mpif90.OPT.MPI.PETSC/conveniencefort.C	/^        integer ic,id,is, i,j$/;"	v
+isDefined	src/PatchParticle.cpp	/^bool PatchParticle::isDefined() const$/;"	f	class:PatchParticle
+levelSetup	src/AMRLevelPIC.cpp	/^levelSetup()$/;"	f	class:AMRLevelPIC
+linearIn	src/JointParticle.cpp	/^void JointParticle::linearIn(void* buf)$/;"	f	class:JointParticle
+linearOut	src/JointParticle.cpp	/^void JointParticle::linearOut(void* buf) const$/;"	f	class:JointParticle
+m_Cexp	src/AMRLevelPIC.H	/^Real                 m_Cexp;$/;"	m	class:AMRLevelPIC
+m_H0	src/Cosmology.H	/^  Real m_H0, m_Omega_m;$/;"	m	class:Cosmology
+m_Omega_m	src/Cosmology.H	/^  Real m_H0, m_Omega_m;$/;"	m	class:Cosmology
+m_PNew	src/AMRLevelPIC.H	/^ParticleData<Particle> m_POld, m_PNew;$/;"	m	class:AMRLevelPIC
+m_POld	src/AMRLevelPIC.H	/^ParticleData<Particle> m_POld, m_PNew;$/;"	m	class:AMRLevelPIC
+m_PVR	src/AMRLevelPIC.H	/^ParticleValidRegion  m_PVR;$/;"	m	class:AMRLevelPIC
+m_buffer	src/AMRLevelPIC.H	/^const static int     m_buffer = 2;$/;"	m	class:AMRLevelPIC
+m_cfl	src/AMRLevelPIC.H	/^Real                 m_cfl;$/;"	m	class:AMRLevelPIC
+m_cfl	src/AMRLevelPICFactory.H	/^  Real                      m_cfl;$/;"	m	class:AMRLevelPICFactory
+m_coarseAveragePhi	src/AMRLevelPIC.H	/^CoarseAverage m_coarseAveragePhi;$/;"	m	class:AMRLevelPIC
+m_coef_acc	src/PatchParticle.H	/^  Real m_coef_exp, m_coef_vel, m_coef_acc;$/;"	m	class:PatchParticle
+m_coef_acc_pred	src/PatchParticle.H	/^  Real m_coef_exp_pred, m_coef_vel_pred, m_coef_acc_pred;$/;"	m	class:PatchParticle
+m_coef_exp	src/PatchParticle.H	/^  Real m_coef_exp, m_coef_vel, m_coef_acc;$/;"	m	class:PatchParticle
+m_coef_exp_pred	src/PatchParticle.H	/^  Real m_coef_exp_pred, m_coef_vel_pred, m_coef_acc_pred;$/;"	m	class:PatchParticle
+m_coef_vel	src/PatchParticle.H	/^  Real m_coef_exp, m_coef_vel, m_coef_acc;$/;"	m	class:PatchParticle
+m_coef_vel_pred	src/PatchParticle.H	/^  Real m_coef_exp_pred, m_coef_vel_pred, m_coef_acc_pred;$/;"	m	class:PatchParticle
+m_collapseA	src/ZeldovichIBC.H	/^  Real m_collapseA;$/;"	m	class:ZeldovichIBC
+m_cosmology	src/AMRLevelPIC.H	/^Cosmology m_cosmology;$/;"	m	class:AMRLevelPIC
+m_cosmology	src/PatchParticle.H	/^  Cosmology m_cosmology;$/;"	m	class:PatchParticle
+m_cosmology	src/ZeldovichIBC.H	/^  Cosmology m_cosmology;$/;"	m	class:ZeldovichIBC
+m_defined	src/LevelParticle.H	/^  bool m_defined;$/;"	m	class:LevelParticle
+m_domain	src/LevelParticle.H	/^  ProblemDomain m_domain;$/;"	m	class:LevelParticle
+m_domain	src/PatchParticle.H	/^  ProblemDomain m_domain;$/;"	m	class:PatchParticle
+m_domain	src/ZeldovichIBC.H	/^  ProblemDomain m_domain;$/;"	m	class:ZeldovichIBC
+m_domainLength	src/AMRLevelPIC.H	/^Real                 m_domainLength;$/;"	m	class:AMRLevelPIC
+m_domainLength	src/AMRLevelPICFactory.H	/^  Real                      m_domainLength;$/;"	m	class:AMRLevelPICFactory
+m_domainLength	src/LevelParticle.H	/^  RealVect m_domainLength;$/;"	m	class:LevelParticle
+m_dt	src/PatchParticle.H	/^  Real m_dt;$/;"	m	class:PatchParticle
+m_dtNew	src/AMRLevelPIC.H	/^Real                 m_dtNew, m_dtOld;$/;"	m	class:AMRLevelPIC
+m_dtOld	src/AMRLevelPIC.H	/^Real                 m_dtNew, m_dtOld;$/;"	m	class:AMRLevelPIC
+m_dx	src/AMRLevelPIC.H	/^Real                 m_dx;$/;"	m	class:AMRLevelPIC
+m_dx	src/LevelParticle.H	/^  Real m_dx;$/;"	m	class:LevelParticle
+m_dx	src/PatchParticle.H	/^  Real m_dx;$/;"	m	class:PatchParticle
+m_dx	src/ZeldovichIBC.H	/^  Real m_dx;$/;"	m	class:ZeldovichIBC
+m_fieldNew	src/AMRLevelPIC.H	/^LevelData<FArrayBox> m_fieldOld, m_fieldNew;$/;"	m	class:AMRLevelPIC
+m_fieldOld	src/AMRLevelPIC.H	/^LevelData<FArrayBox> m_fieldOld, m_fieldNew;$/;"	m	class:AMRLevelPIC
+m_fineInterpRhs	src/AMRLevelPIC.H	/^FineInterp m_fineInterpRhs;$/;"	m	class:AMRLevelPIC
+m_forwardCopier	src/AMRLevelPIC.H	/^Copier               m_forwardCopier;$/;"	m	class:AMRLevelPIC
+m_grids	src/AMRLevelPIC.H	/^DisjointBoxLayout    m_grids;$/;"	m	class:AMRLevelPIC
+m_hasCoarser	src/AMRLevelPIC.H	/^bool                 m_hasCoarser;$/;"	m	class:AMRLevelPIC
+m_hasFiner	src/AMRLevelPIC.H	/^bool                 m_hasFiner;$/;"	m	class:AMRLevelPIC
+m_ibc	src/AMRLevelPIC.H	/^ZeldovichIBC* m_ibc;$/;"	m	class:AMRLevelPIC
+m_ibc	src/AMRLevelPICFactory.H	/^  const ZeldovichIBC*       m_ibc;$/;"	m	class:AMRLevelPICFactory
+m_initialA	src/ZeldovichIBC.H	/^  Real m_initialA;$/;"	m	class:ZeldovichIBC
+m_isDefined	src/AMRLevelPIC.H	/^bool                 m_isDefined;$/;"	m	class:AMRLevelPIC
+m_isDefined	src/PatchParticle.H	/^  bool m_isDefined;$/;"	m	class:PatchParticle
+m_isMeshInterpSet	src/PatchParticle.H	/^  bool m_isMeshInterpSet;$/;"	m	class:PatchParticle
+m_isParametersSet	src/PatchParticle.H	/^  bool m_isParametersSet;$/;"	m	class:PatchParticle
+m_isPusherCoeffSet	src/PatchParticle.H	/^  bool m_isPusherCoeffSet;$/;"	m	class:PatchParticle
+m_isThisFinestLev	src/AMRLevelPIC.H	/^bool                 m_isThisFinestLev;$/;"	m	class:AMRLevelPIC
+m_jointParticle	src/AMRLevelPIC.H	/^ParticleData<JointParticle> m_jointParticle;$/;"	m	class:AMRLevelPIC
+m_levelParticle	src/AMRLevelPIC.H	/^LevelParticle m_levelParticle;$/;"	m	class:AMRLevelPIC
+m_maxBoxSize	src/AMRLevelPIC.H	/^int                  m_maxBoxSize;$/;"	m	class:AMRLevelPIC
+m_maxGridSize	src/AMRLevelPICFactory.H	/^  int                       m_maxGridSize;$/;"	m	class:AMRLevelPICFactory
+m_meshInterp	src/PatchParticle.H	/^  MeshInterp* m_meshInterp;$/;"	m	class:PatchParticle
+m_meshSpacing	src/AMRLevelPIC.H	/^RealVect             m_meshSpacing;$/;"	m	class:AMRLevelPIC
+m_numForceGhost	src/AMRLevelPIC.H	/^Real                 m_numForceGhost;$/;"	m	class:AMRLevelPIC
+m_numParticles	src/JointParticle.H	/^  size_t  m_numParticles;$/;"	m	class:JointParticle
+m_offset	src/ZeldovichIBC.H	/^  RealVect m_offset;$/;"	m	class:ZeldovichIBC
+m_origin	src/AMRLevelPIC.H	/^RealVect             m_origin;$/;"	m	class:AMRLevelPIC
+m_origin	src/PatchParticle.H	/^  RealVect m_origin;$/;"	m	class:PatchParticle
+m_partPerCell	src/ZeldovichIBC.H	/^  Real m_partPerCell;$/;"	m	class:ZeldovichIBC
+m_patchParticle	src/AMRLevelPIC.H	/^PatchParticle* m_patchParticle;$/;"	m	class:AMRLevelPIC
+m_patchParticle	src/LevelParticle.H	/^  PatchParticle* m_patchParticle;$/;"	m	class:LevelParticle
+m_phiInt	src/AMRLevelPIC.H	/^LevelData<FArrayBox> m_phiOld, m_phiNew, m_phiInt;$/;"	m	class:AMRLevelPIC
+m_phiNew	src/AMRLevelPIC.H	/^LevelData<FArrayBox> m_phiOld, m_phiNew, m_phiInt;$/;"	m	class:AMRLevelPIC
+m_phiOld	src/AMRLevelPIC.H	/^LevelData<FArrayBox> m_phiOld, m_phiNew, m_phiInt;$/;"	m	class:AMRLevelPIC
+m_poissonInterpType	src/AMRLevelPIC.H	/^InterpType           m_poissonInterpType;$/;"	m	class:AMRLevelPIC
+m_poissonInterpType	src/AMRLevelPICFactory.H	/^  InterpType                m_poissonInterpType;$/;"	m	class:AMRLevelPICFactory
+m_poissonInterpType	src/PatchParticle.H	/^  InterpType m_poissonInterpType;$/;"	m	class:PatchParticle
+m_quadCFInterpPhi	src/AMRLevelPIC.H	/^QuadCFInterp m_quadCFInterpPhi;$/;"	m	class:AMRLevelPIC
+m_refineThresh	src/AMRLevelPIC.H	/^Real                 m_refineThresh;$/;"	m	class:AMRLevelPIC
+m_refineThresh	src/AMRLevelPICFactory.H	/^  Real                      m_refineThresh;$/;"	m	class:AMRLevelPICFactory
+m_reverseCopier	src/AMRLevelPIC.H	/^Copier               m_reverseCopier;$/;"	m	class:AMRLevelPIC
+m_rhs	src/AMRLevelPIC.H	/^LevelData<FArrayBox> m_rhs;      $/;"	m	class:AMRLevelPIC
+m_rhsCrseNew	src/AMRLevelPIC.H	/^LevelData<FArrayBox> m_rhsCrseNew, m_rhsCrseOld;$/;"	m	class:AMRLevelPIC
+m_rhsCrseOld	src/AMRLevelPIC.H	/^LevelData<FArrayBox> m_rhsCrseNew, m_rhsCrseOld;$/;"	m	class:AMRLevelPIC
+m_rhsOffset	src/AMRLevelPIC.H	/^Real                 m_rhsOffset;$/;"	m	class:AMRLevelPIC
+m_verbosity	src/AMRLevelPIC.H	/^const static int     m_verbosity = 3;$/;"	m	class:AMRLevelPIC
+m_wavenum	src/ZeldovichIBC.H	/^  Real m_wavenum;$/;"	m	class:ZeldovichIBC
+main	exec/amrPIC.cpp	/^main(int a_argc, char* a_argv[])$/;"	f
+makePoissonRhs	src/AMRLevelPIC.cpp	/^void AMRLevelPIC::makePoissonRhs(LevelData<FArrayBox>&       a_rhs,$/;"	f	class:AMRLevelPIC
+new_amrlevel	src/AMRLevelPICFactory.cpp	/^AMRLevel* AMRLevelPICFactory::new_amrlevel() const$/;"	f	class:AMRLevelPICFactory
+new_patchParticle	src/PatchParticle.cpp	/^PatchParticle* PatchParticle::new_patchParticle() const$/;"	f	class:PatchParticle
+new_zeldovichIBC	src/ZeldovichIBC.cpp	/^ZeldovichIBC* ZeldovichIBC::new_zeldovichIBC() const$/;"	f	class:ZeldovichIBC
+numParticles	src/JointParticle.cpp	/^size_t JointParticle::numParticles() const$/;"	f	class:JointParticle
+offset	src/Convenience.H	/^inline void offset(BoxLayoutData<T>& a_lt, const Real a_offset)$/;"	f
+operator <<	src/JointParticle.cpp	/^std::ostream & operator<<(std::ostream& ostr, const JointParticle& p)$/;"	f
+operator =	src/LevelParticle.H	/^  void operator=(const LevelParticle& a_input)$/;"	f	class:LevelParticle
+operator =	src/PatchParticle.H	/^  void operator=(const PatchParticle& a_input)$/;"	f	class:PatchParticle
+postCorrect	src/LevelParticleI.H	/^void LevelParticle::postCorrect(ParticleData<P>& a_levP)$/;"	f	class:LevelParticle
+postInitialize	src/AMRLevelPIC.cpp	/^postInitialize()$/;"	f	class:AMRLevelPIC
+postRegrid	src/AMRLevelPIC.cpp	/^postRegrid(int a_baseLevel)$/;"	f	class:AMRLevelPIC
+postTimeStep	src/AMRLevelPIC.cpp	/^postTimeStep()$/;"	f	class:AMRLevelPIC
+preRegrid	src/AMRLevelPIC.cpp	/^preRegrid(int a_base_level,$/;"	f	class:AMRLevelPIC
+print	src/JointParticle.cpp	/^void JointParticle::print(void) const$/;"	f	class:JointParticle
+readCheckpointHeader	src/AMRLevelPIC.cpp	/^readCheckpointHeader(HDF5Handle& a_handle)$/;"	f	class:AMRLevelPIC
+readCheckpointLevel	src/AMRLevelPIC.cpp	/^readCheckpointLevel(HDF5Handle& a_handle)$/;"	f	class:AMRLevelPIC
+regrid	src/AMRLevelPIC.cpp	/^regrid(const Vector<Box>& a_newGrids)$/;"	f	class:AMRLevelPIC
+resetPusherCoeff	src/PatchParticle.cpp	/^void PatchParticle::resetPusherCoeff()$/;"	f	class:PatchParticle
+s_bottomSolver	src/AMRLevelPIC.H	/^static BiCGStabSolver<LevelData<FArrayBox> >* s_bottomSolver;$/;"	m	class:AMRLevelPIC
+s_bottomSolver	src/AMRLevelPIC.cpp	/^BiCGStabSolver<LevelData<FArrayBox> >* AMRLevelPIC::s_bottomSolver  = NULL;$/;"	m	class:AMRLevelPIC	file:
+s_gravMGSolver	src/AMRLevelPIC.H	/^static RefCountedPtr<AMRMultiGrid<LevelData<FArrayBox> > > s_gravMGSolver;$/;"	m	class:AMRLevelPIC
+s_gravOpFact	src/AMRLevelPIC.H	/^static RefCountedPtr<AMRPoissonOpFactory> s_gravOpFact;$/;"	m	class:AMRLevelPIC
+secondOrderCorrection	src/AMRLevelPIC.cpp	/^void AMRLevelPIC::secondOrderCorrection()$/;"	f	class:AMRLevelPIC
+setMeshInterp	src/PatchParticle.cpp	/^void PatchParticle::setMeshInterp(const InterpType& a_poissonInterpType)$/;"	f	class:PatchParticle
+setNumParticles	src/JointParticle.cpp	/^void JointParticle::setNumParticles(const size_t& a_numParticles)$/;"	f	class:JointParticle
+setParameters	src/PatchParticle.cpp	/^void PatchParticle::setParameters(const InterpType& a_poissonInterpType)$/;"	f	class:PatchParticle
+setPusherCoeff	src/PatchParticle.cpp	/^void PatchParticle::setPusherCoeff(const Real& a_time, const Real& a_dt)$/;"	f	class:PatchParticle
+setToVal	src/Convenience.H	/^inline void setToVal(BoxLayoutData<T>& a_lt, const V a_v)$/;"	f
+setupAMRForFixedHierarchyRun	src/AMRPICUtils.cpp	/^setupAMRForFixedHierarchyRun(AMR& a_amr, $/;"	f
+setupAMRHierarchy	src/AMRPICUtils.cpp	/^setupAMRHierarchy(Vector<Vector<Box> >& a_hierarchy)$/;"	f
+size	src/JointParticle.cpp	/^int JointParticle::size() const$/;"	f	class:JointParticle
+src_dirs	exec/GNUmakefile	/^src_dirs = ..\/src$/;"	m
+step	src/LevelParticleI.H	/^Real LevelParticle::step(ParticleData<P>&                a_levP,$/;"	f	class:LevelParticle
+t	src/Cosmology.cpp	/^Real Cosmology::t(const Real& a_expansion_factor)$/;"	f	class:Cosmology
+tagCells	src/AMRLevelPIC.cpp	/^tagCells(IntVectSet& a_tags)$/;"	f	class:AMRLevelPIC
+tagCellsInit	src/AMRLevelPIC.cpp	/^tagCellsInit(IntVectSet& a_tags)$/;"	f	class:AMRLevelPIC
+updateState	src/PatchParticleI.H	/^void PatchParticle::updateState(ListBox<P>&     a_listBox,$/;"	f	class:PatchParticle
+writeCheckpointHeader	src/AMRLevelPIC.cpp	/^writeCheckpointHeader(HDF5Handle& a_handle) const$/;"	f	class:AMRLevelPIC
+writeCheckpointLevel	src/AMRLevelPIC.cpp	/^writeCheckpointLevel(HDF5Handle& a_handle) const$/;"	f	class:AMRLevelPIC
+writePlotHeader	src/AMRLevelPIC.cpp	/^writePlotHeader(HDF5Handle& a_handle) const$/;"	f	class:AMRLevelPIC
+writePlotLevel	src/AMRLevelPIC.cpp	/^writePlotLevel(HDF5Handle& a_handle) const$/;"	f	class:AMRLevelPIC
+~AMRLevelPIC	src/AMRLevelPIC.cpp	/^~AMRLevelPIC()$/;"	f	class:AMRLevelPIC
+~AMRLevelPICFactory	src/AMRLevelPICFactory.cpp	/^~AMRLevelPICFactory()$/;"	f	class:AMRLevelPICFactory
+~JointParticle	src/JointParticle.cpp	/^JointParticle::~JointParticle()$/;"	f	class:JointParticle
+~LevelParticle	src/LevelParticle.cpp	/^LevelParticle::~LevelParticle()$/;"	f	class:LevelParticle
+~PatchParticle	src/PatchParticle.cpp	/^PatchParticle::~PatchParticle()$/;"	f	class:PatchParticle
+~ZeldovichIBC	src/ZeldovichIBC.H	/^  ~ZeldovichIBC() {}$/;"	f	class:ZeldovichIBC
