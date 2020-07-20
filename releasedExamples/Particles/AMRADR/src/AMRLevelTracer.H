@@ -18,6 +18,7 @@
 #include "ListBox.H"
 #include "ListBoxFactory.H"
 #include "Particle.H"
+#include "MeshInterp.H"
 #include "AdvectionFunctions.H"
 #include "ParticleData.H"
 #include "ParticleValidRegion.H"
@@ -47,15 +48,18 @@ public:
   AMRLevelTracer(AdvectionVelocityFunction a_advFunc,
                  const Real& a_cfl,
                  const Real& a_domainLength,
+                 const InterpType& a_poissonInterpType,
                  const int& a_maxBoxSize)
   {
-    define(a_advFunc, a_cfl, a_domainLength, a_maxBoxSize);
+    m_isDefined = false;
+    define(a_advFunc, a_cfl, a_domainLength, a_poissonInterpType, a_maxBoxSize);
   }
 
   /// Defines this AMRLevelTracer
   void define(AdvectionVelocityFunction a_advFunc,
               const Real& a_cfl,
               const Real& a_domainLength,
+              const InterpType& a_poissonInterpType,
               const int& a_maxBoxSize);
 
   /// Destructor
@@ -81,6 +85,15 @@ public:
 
   /// Things to do after a timestep
   virtual void postTimeStep();
+
+  // set parameters
+  virtual void setParameters(const InterpType& a_poissonInterpType);
+
+  /// Set the MeshInterp object
+  virtual void setMeshInterp(const InterpType& a_poissonInterpType);
+
+  /// get MeshInterp object
+  MeshInterp* getMeshInterp() const;
 
   /// Create tags for regridding
   virtual void tagCells(IntVectSet& a_tags) ;
@@ -153,9 +166,14 @@ protected:
   // Particles at the old and new times
   ParticleData<Particle> m_POld, m_PNew;
 
+  // MeshInterp object: manages particle-grid operations
+  MeshInterp* m_meshInterp;
+  bool m_isMeshInterpSet;
+  
   bool                 m_isDefined;
   Real                 m_cfl;
   Real                 m_domainLength;
+  InterpType           m_poissonInterpType;
   Real                 m_dx;
   RealVect             m_meshSpacing;
   RealVect             m_origin;

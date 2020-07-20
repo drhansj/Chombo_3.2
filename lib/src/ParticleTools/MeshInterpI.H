@@ -23,12 +23,35 @@ void MeshInterp::deposit(const List<P>& a_particleList,
     const P& this_particle = lit();
     const RealVect& this_x = this_particle.position();
     const Real& this_m = this_particle.mass();
-    depositParticle(a_rho, 
-                    m_domainLeftEdge, 
-                    m_dx, 
-                    this_x, 
-                    this_m, 
+    depositParticle(a_rho,
+                    m_domainLeftEdge,
+                    m_dx,
+                    this_x,
+                    this_m,
                     a_interpType);
+  }
+}
+
+template <class P>
+void MeshInterp::depositVelocity(const List<P>& a_particleList,
+                                 FArrayBox& a_v_field,
+                                 FArrayBox& a_rho,
+                                 InterpType& a_interpType)
+{
+  for (ListIterator<P> lit(a_particleList); lit; ++lit)
+  {
+    const P& this_particle = lit();
+    const RealVect& this_x = this_particle.position();
+    const Real& this_m = this_particle.mass();
+    const RealVect& this_velocity = this_particle.velocity();
+    depositParticleVelocity(a_v_field,
+                            a_rho,
+                            m_domainLeftEdge,
+                            m_dx,
+                            this_x,
+                            this_m,
+                            this_velocity,
+                            a_interpType);
   }
 }
 

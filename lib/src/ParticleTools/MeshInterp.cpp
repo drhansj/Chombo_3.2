@@ -75,6 +75,48 @@ void MeshInterp::depositParticle(FArrayBox& a_rho,
     }
 }
 
+void MeshInterp::depositParticleVelocity(FArrayBox& a_v_field,
+                                         const FArrayBox& a_rho,
+                                         const RealVect& a_domainLeftEdge,
+                                         const RealVect&     a_dx,
+                                         const RealVect& a_position,
+                                         const Real&     a_mass,
+                                         const RealVect&  a_velocity,
+                                         const InterpType a_interpType)
+
+{
+  switch (a_interpType)
+    {
+    case NGP:
+      FORT_NGP_DEPOSIT_VELOCITY(CHF_FRA1(a_v_field,0),
+                       CHF_CONST_REALVECT(a_domainLeftEdge),
+                       CHF_CONST_REALVECT(a_dx),
+                       CHF_CONST_REALVECT(a_position),
+                       CHF_CONST_REALVECT(a_velocity));
+      break;
+    case CIC:
+      FORT_CIC_DEPOSIT_VELOCITY(CHF_FRA1(a_v_field,0),
+                       CHF_CONST_FRA(a_rho),
+                       CHF_CONST_REALVECT(a_domainLeftEdge),
+                       CHF_CONST_REALVECT(a_dx),
+                       CHF_CONST_REALVECT(a_position),
+                       CHF_CONST_REALVECT(a_velocity),
+                       CHF_CONST_REAL(a_mass));
+      break;
+    case TSC:
+      FORT_TSC_DEPOSIT_VELOCITY(CHF_FRA1(a_v_field,0),
+                       CHF_CONST_FRA(a_rho),
+                       CHF_CONST_REALVECT(a_domainLeftEdge),
+                       CHF_CONST_REALVECT(a_dx),
+                       CHF_CONST_REALVECT(a_position),
+                       CHF_CONST_REALVECT(a_velocity),
+                       CHF_CONST_REAL(a_mass));
+      break;
+    default:
+      MayDay::Error("Invalid interpolation type in MeshInterp::depositParticle");
+    }
+}
+
 void MeshInterp::interpolateParticle(RealVect& a_particleField,
                                      const FArrayBox& a_field,
                                      const RealVect& a_domainLeftEdge,

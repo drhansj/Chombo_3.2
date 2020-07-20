@@ -23,13 +23,15 @@
 #include "ParticleIO.H"
 #include "AMRLevelTracer.H"
 #include "ParmParse.H"
+#include "MeshInterp.H"
 
 #include "NamespaceHeader.H"
 
 /*******/
 AMRLevelTracer::
 ~AMRLevelTracer()
-{}
+{
+}
 
 /********/
 void
@@ -37,12 +39,14 @@ AMRLevelTracer::
 define(AdvectionVelocityFunction a_advFunc,
        const Real&               a_cfl,
        const Real&               a_domainLength,
+       const InterpType&         a_poissonInterpType,
        const int&                a_maxBoxSize)
 {
   m_isDefined = true;
   m_advFunc = a_advFunc;
   m_cfl = a_cfl;
   m_domainLength = a_domainLength;
+  m_poissonInterpType = a_poissonInterpType;
   m_maxBoxSize = a_maxBoxSize;
 }
 
@@ -142,7 +146,7 @@ advance()
   for (dit.reset(); dit.ok(); ++dit)
   {
     m_PNew[dit].getInvalidDestructive(m_PNew.outcast(), m_grids[dit]);
-  }  
+  }
 
   // rebin
   m_PNew.gatherOutcast();
@@ -170,22 +174,22 @@ postTimeStep()
     if (!stepsLeft)
     {
       // First, collect all the particles that go from crse to fine:
-      collectValidParticles(m_PNew.outcast(), 
-                            amrPartCoarserPtr->m_PNew, 
+      collectValidParticles(m_PNew.outcast(),
+                            amrPartCoarserPtr->m_PNew,
                             m_PVR.mask(),
-                            m_meshSpacing, 
+                            m_meshSpacing,
                             amrPartCoarserPtr->m_ref_ratio);
 
     // now take the particles that have left the fine level and put them on the crse
-    collectValidParticles(amrPartCoarserPtr->m_PNew.outcast(), m_PNew, 
+    collectValidParticles(amrPartCoarserPtr->m_PNew.outcast(), m_PNew,
                           m_PVR.mask(), m_meshSpacing, 1, true);
 
     // finally, remap outcasts on both levels
     m_PNew.remapOutcast();
     amrPartCoarserPtr->m_PNew.remapOutcast();
 
-    } 
-  } 
+    }
+  }
 
   if (m_level == 0)
   {
@@ -232,7 +236,7 @@ tagCells(IntVectSet& a_tags)
       bool is_contained = true;
       for (int dim = 0; dim < CH_SPACEDIM; ++dim)
       {
-        is_contained = (is_contained and 
+        is_contained = (is_contained and
                         (lo[dim] <= iv[dim]) and
                         (hi[dim] > iv[dim]));
       }
@@ -291,7 +295,7 @@ preRegrid(int a_base_level,
     }
 
   }
-    
+
   // This level should now be empty
   CH_assert(countItems() == 0);
 
@@ -305,7 +309,7 @@ void
 AMRLevelTracer::
 regrid(const Vector<Box>& a_newGrids)
 {
-  
+
   // timer
   CH_TIME("AMRLevelTracer::regrid");
 
@@ -332,7 +336,7 @@ regrid(const Vector<Box>& a_newGrids)
 }
 
 /// postRegridding ops
-void 
+void
 AMRLevelTracer::
 postRegrid(int a_baseLevel)
 {
@@ -360,13 +364,81 @@ postRegrid(int a_baseLevel)
   // Transfer all particles from a_base_level to this level
   // if they contained within the valid region.
   collectValidParticles(m_PNew.outcast(),
-                        baseLevelPtr->m_PNew, 
+                        baseLevelPtr->m_PNew,
                         m_PVR.mask(),
                         m_meshSpacing, refRatio);
 
   // remap outcast on this level
   m_PNew.remapOutcast();
 
+}
+
+void AMRLevelTracer::setParameters(const InterpType& a_poissonInterpType)
+{
+  m_poissonInterpType = a_poissonInterpType;
+  m_isParametersSet = true;
+}
+
+/// get particle-mesh object
+MeshInterp* AMRLevelTracer::getMeshInterp() const
+{
+  CH_assert(m_isMeshInterpSet);
+  return m_meshInterp;
+}
+
+
+// Set MeshInterp object
+void AMRLevelTracer::setMeshInterp(const InterpType& a_poissonInterpType)
+{
+  CH_assert(m_isParametersSet);
+  CH_assert(a_poissonInterpType == m_poissonInterpType);
+
+  if (m_meshInterp != NULL)
+    {
+      delete m_meshInterp;
+    }
+
+  m_meshInterp = static_cast<MeshInterp* > (new MeshInterp(m_domain.domainBox(),
+                                                           RealVect(D_DECL(m_dx, m_dx, m_dx)),
+                                                           m_origin));
+
+  m_isMeshInterpSet = true;
+}
+
+// Distribute particle mass onto the grid. If the particles' clouds
+// extend outside the current box, an error will be thrown.
+template <class P>
+void AMRLevelTracer::deposit(FArrayBox&        a_rho,
+                            const ListBox<P>& a_listBox,
+                            const Box&        a_box)
+{
+  CH_assert(isDefined());
+
+  CH_assert(m_dx == a_listBox.meshSpacing()[0]);
+  CH_assert(a_rho.box().contains(a_box));
+
+  m_meshInterp->deposit(a_listBox.listItems(),
+                        a_rho,
+                        m_poissonInterpType);
+}
+
+// Distribute particle mass onto the grid. If the particles' clouds
+// extend outside the current box, an error will be thrown.
+template <class P>
+void AMRLevelTracer::depositVelocity(FArrayBox&        a_v_field,
+                                        const FArrayBox&  a_rho,
+                                        const ListBox<P>& a_listBox,
+                                        const Box&        a_box)
+{
+  CH_assert(isDefined());
+
+  CH_assert(m_dx == a_listBox.meshSpacing()[0]);
+  CH_assert(a_rho.box().contains(a_box));
+
+  m_meshInterp->deposit(a_listBox.listItems(),
+                        a_v_field,
+                        a_rho,
+                        m_poissonInterpType);
 }
 
 /*******/
@@ -398,7 +470,7 @@ initialData()
 {
 
   if (m_level == 0)
-  {  
+  {
 
     // if we are on the first level, put a particle at each cell center.
     CH_XD::List<Particle> thisList;
@@ -425,10 +497,10 @@ initialData()
     // particles have already been created, grab them from the coarser level
     AMRLevelTracer* amrPartCoarserPtr = getCoarserLevel();
 
-    collectValidParticles(m_PNew.outcast(), 
-                          amrPartCoarserPtr->m_PNew, 
+    collectValidParticles(m_PNew.outcast(),
+                          amrPartCoarserPtr->m_PNew,
                           m_PVR.mask(),
-                          m_meshSpacing, 
+                          m_meshSpacing,
                           amrPartCoarserPtr->refRatio());
 
     // put the particles in the proper bins
@@ -521,6 +593,23 @@ writePlotHeader(HDF5Handle& a_handle) const
   char field_name [50];
   char comp_name [50];
   char coords[3] = {'x', 'y', 'z'};
+
+  // setup mesh field names
+  int numMeshComps = 2 + CH_SPACEDIM;
+  for (int dir = 0; dir < CH_SPACEDIM; dir++)
+  {
+    sprintf(field_name, "velocity_field_%c", coords[dir]);
+    vectNames.push_back(field_name);
+  }
+
+  for (int i = 0; i < numMeshComps; ++i)
+  {
+    sprintf(comp_name, "component_%d", i);
+    header.m_string[comp_name] = vectNames[i];
+  }
+
+  header.m_int["num_components"] = numMeshComps;
+
 
   for (int dir = 0; dir < CH_SPACEDIM; dir++)
   {
@@ -621,6 +710,45 @@ writePlotLevel(HDF5Handle& a_handle) const
 
     // now write out our particles
   writeParticlesToHDF(a_handle, m_PNew, "particles");
+
+  LevelData<FArrayBox> m_velocity_field;
+  LevelData<FArrayBox> m_rho;
+  const DisjointBoxLayout& grids = m_velocity_field.getBoxes();
+  DataIterator di = grids.dataIterator();
+
+  setToVal(m_velocity_field,0.0);
+  setToVal(m_rho,0.0);
+  if (m_PNew.isDefined())
+    {
+      CH_assert(m_PNew.isClosed());
+
+      for (DataIterator di(m_grids); di.ok(); ++di)
+        {
+          CH_assert(m_dx == m_PNew[di].meshSpacing()[0]);
+          CH_assert(m_rho[di].box().contains(m_grids[di]));
+          m_meshInterp->deposit(m_PNew[di].listItems(), m_rho[di], m_poissonInterpType);
+        }
+    }
+    if (m_PNew.isDefined())
+      {
+        CH_assert(m_PNew.isClosed());
+
+        for (DataIterator di(m_grids); di.ok(); ++di)
+          {
+            CH_assert(m_dx == m_PNew[di].meshSpacing()[0]);
+            CH_assert(m_rho[di].box().contains(m_grids[di]));
+            m_meshInterp->depositVelocity(m_PNew[di].listItems(), m_velocity_field[di], m_rho[di], m_poissonInterpType);
+          }
+      }
+      outputData.define(m_grids, numComps, IntVect::Zero);
+
+  // do copies
+  m_rho.copyTo(Interval(0, 0), outputData, Interval(0, 0));
+  m_velocity_field.copyTo(Interval(0, CH_SPACEDIM - 1), outputData, Interval(2, CH_SPACEDIM + 1));
+
+  write(a_handle, m_rhs.boxLayout());
+  write(a_handle, outputData, "data");
+
 }
 #endif
 
