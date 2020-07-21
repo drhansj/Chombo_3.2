@@ -156,7 +156,7 @@ c     computing weight and assigning mass
      &                                CHF_CONST_REALVECT[left_edge],
      &                                CHF_CONST_REALVECT[dx],
      &                                CHF_CONST_REALVECT[x],
-     &                                CHF_CONST_REALVECT[velocity]
+     &                                CHF_CONST_REALVECT[velocity],
      &                                CHF_CONST_REAL[q] )
 
       integer index(0:CH_SPACEDIM - 1)
@@ -397,7 +397,7 @@ c     computing weight and assigning mass
      &                                CHF_CONST_REALVECT[left_edge],
      &                                CHF_CONST_REALVECT[dx],
      &                                CHF_CONST_REALVECT[x],
-     &                                CHF_CONST_REALVECT[velocity]
+     &                                CHF_CONST_REALVECT[velocity],
      &                                CHF_CONST_REAL[q] )
 
       end
