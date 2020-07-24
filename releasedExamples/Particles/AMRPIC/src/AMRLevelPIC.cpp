@@ -94,13 +94,13 @@ AMRLevelPIC::
       delete s_bottomSolver;
       s_bottomSolver = NULL;
     }
-  
+
   if (m_patchParticle != NULL)
     {
       delete m_patchParticle;
       m_patchParticle = NULL;
     }
-  
+
   if (m_ibc != NULL)
     {
       delete m_ibc;
@@ -127,7 +127,7 @@ define(const ZeldovichIBC*       a_ibc,
   m_maxBoxSize = a_maxBoxSize;
   m_poissonInterpType = a_poissonInterpType;
   m_refineThresh = a_refineThresh;
-  m_numForceGhost = 1; 
+  m_numForceGhost = 1;
 
   // set up bottom solver
   if (s_bottomSolver == NULL)
@@ -142,9 +142,9 @@ define(const ZeldovichIBC*       a_ibc,
       delete m_patchParticle;
       m_patchParticle = NULL;
     }
-  
+
   m_patchParticle = new PatchParticle();
-  
+
   if (m_ibc != NULL)
     {
       delete m_ibc;
@@ -196,7 +196,7 @@ void AMRLevelPIC::define(AMRLevel*            a_coarserLevelPtr,
   m_meshSpacing = RealVect(D_DECL(m_dx, m_dx, m_dx));
   m_origin      = RealVect(D_DECL(0.0, 0.0, 0.0));
 
-  m_patchParticle->define(m_problem_domain, m_dx, 
+  m_patchParticle->define(m_problem_domain, m_dx,
                           m_poissonInterpType, m_cosmology);
 }
 
@@ -272,13 +272,13 @@ postTimeStep()
                             amrPartCoarserPtr->m_ref_ratio);
 
       // now take the particles that have left the fine level and put them on the crse
-      collectValidParticles(amrPartCoarserPtr->m_PNew.outcast(), m_PNew, 
+      collectValidParticles(amrPartCoarserPtr->m_PNew.outcast(), m_PNew,
                             m_PVR.mask(), m_meshSpacing, 1, true);
 
       // finally, remap outcasts on both levels
       m_PNew.remapOutcast();
       amrPartCoarserPtr->m_PNew.remapOutcast();
-    } 
+    }
   }
 
   // We also must now update Joint Particles, if there is a finer level.
@@ -286,7 +286,7 @@ postTimeStep()
     {
       AMRLevelPIC* amrFinePtr = getFinerLevel();
       amrFinePtr->aggregateParticles(m_jointParticle);
-    } 
+    }
 
   // call amrSync for all levels that are now aligned in time
   const Real eps = 5.e-2;
@@ -321,7 +321,7 @@ tagCells(IntVectSet& a_tags)
     for (bit.reset(); bit.ok(); ++bit)
     {
       const IntVect& iv = bit();
-      
+
       Real m = m_rhs[dit](iv);
       const Real H0 = m_cosmology.m_H0;
 
@@ -373,7 +373,7 @@ preRegrid(int a_base_level,
   CH_assert(baseLevelPtr->m_level == a_base_level);
 
   // We are regridding on level a_base_level; all particles that
-  // live on finer levels should be removed and added here. There is 
+  // live on finer levels should be removed and added here. There is
   // probably a better way to do this.
   AMRLevelPIC* amrFinerPtr = getFinerLevel();
   while (amrFinerPtr != NULL)
@@ -401,7 +401,7 @@ void
 AMRLevelPIC::
 regrid(const Vector<Box>& a_newGrids)
 {
-  
+
   // timer
   CH_TIME("AMRLevelPIC::regrid");
 
@@ -417,11 +417,11 @@ regrid(const Vector<Box>& a_newGrids)
   m_grids = DisjointBoxLayout(a_newGrids, procs, m_problem_domain);
 
   // Define old and new particle data structures
-  m_PNew.define(m_grids, m_problem_domain, m_maxBoxSize, 
+  m_PNew.define(m_grids, m_problem_domain, m_maxBoxSize,
                 m_meshSpacing, m_origin);
-  m_POld.define(m_grids, m_problem_domain, m_maxBoxSize, 
+  m_POld.define(m_grids, m_problem_domain, m_maxBoxSize,
                 m_meshSpacing, m_origin);
-  m_jointParticle.define(m_grids, m_problem_domain, m_maxBoxSize, 
+  m_jointParticle.define(m_grids, m_problem_domain, m_maxBoxSize,
                          m_meshSpacing, m_origin);
 
   // Define old and new mesh data structures
@@ -435,17 +435,17 @@ regrid(const Vector<Box>& a_newGrids)
   m_fieldOld.define(m_grids, CH_SPACEDIM, m_numForceGhost*IntVect::Unit);
 
   // standard ghost exchange copier
-  m_forwardCopier.define(m_grids, 
-                         m_grids, 
-                         m_problem_domain, 
-                         m_numForceGhost*IntVect::Unit, 
+  m_forwardCopier.define(m_grids,
+                         m_grids,
+                         m_problem_domain,
+                         m_numForceGhost*IntVect::Unit,
                          true);
 
   // a reversed version of the above
-  m_reverseCopier.define(m_grids, 
-                         m_grids, 
-                         m_problem_domain, 
-                         m_numForceGhost*IntVect::Unit, 
+  m_reverseCopier.define(m_grids,
+                         m_grids,
+                         m_problem_domain,
+                         m_numForceGhost*IntVect::Unit,
                          true);
 
   m_reverseCopier.reverse();
@@ -475,7 +475,7 @@ regrid(const Vector<Box>& a_newGrids)
 }
 
 /// postRegridding ops
-void 
+void
 AMRLevelPIC::
 postRegrid(int a_baseLevel)
 {
@@ -546,7 +546,7 @@ postRegrid(int a_baseLevel)
       defineEllipticSolvers(m_level);
     }
 
-  // finally, do a full multilevel Poisson solve from the coarsest 
+  // finally, do a full multilevel Poisson solve from the coarsest
   // synchronized level. This involves walking through the level
   // hierarchy.
   int crsestSynchLev = m_level;
@@ -595,11 +595,11 @@ initialGrid(const Vector<Box>& a_newGrids)
   m_grids = DisjointBoxLayout(a_newGrids, procs, m_problem_domain);
 
   // Define old and new particle data structures
-  m_PNew.define(m_grids, m_problem_domain, m_maxBoxSize, 
+  m_PNew.define(m_grids, m_problem_domain, m_maxBoxSize,
                 m_meshSpacing, m_origin);
-  m_POld.define(m_grids, m_problem_domain, m_maxBoxSize, 
+  m_POld.define(m_grids, m_problem_domain, m_maxBoxSize,
                 m_meshSpacing, m_origin);
-  m_jointParticle.define(m_grids, m_problem_domain, m_maxBoxSize, 
+  m_jointParticle.define(m_grids, m_problem_domain, m_maxBoxSize,
                          m_meshSpacing, m_origin);
 
   // Define old and new mesh data structures
@@ -613,17 +613,17 @@ initialGrid(const Vector<Box>& a_newGrids)
   m_fieldOld.define(m_grids, CH_SPACEDIM, m_numForceGhost*IntVect::Unit);
 
   // standard ghost exchange copier
-  m_forwardCopier.define(m_grids, 
-                         m_grids, 
-                         m_problem_domain, 
-                         m_numForceGhost*IntVect::Unit, 
+  m_forwardCopier.define(m_grids,
+                         m_grids,
+                         m_problem_domain,
+                         m_numForceGhost*IntVect::Unit,
                          true);
 
   // a reversed version of the above
-  m_reverseCopier.define(m_grids, 
-                         m_grids, 
-                         m_problem_domain, 
-                         m_numForceGhost*IntVect::Unit, 
+  m_reverseCopier.define(m_grids,
+                         m_grids,
+                         m_problem_domain,
+                         m_numForceGhost*IntVect::Unit,
                          true);
   m_reverseCopier.reverse();
 
@@ -673,10 +673,10 @@ initialData()
     // particles have already been created, grab them from the coarser level
     AMRLevelPIC* amrPartCoarserPtr = getCoarserLevel();
 
-    collectValidParticles(m_PNew.outcast(), 
-                          amrPartCoarserPtr->m_PNew, 
+    collectValidParticles(m_PNew.outcast(),
+                          amrPartCoarserPtr->m_PNew,
                           m_PVR.mask(),
-                          m_meshSpacing, 
+                          m_meshSpacing,
                           amrPartCoarserPtr->refRatio());
 
     // put the particles in the proper bins
@@ -716,7 +716,7 @@ postInitialize()
     AMRLevelPIC* amrFinePtr = getFinerLevel();
     amrFinePtr->aggregateParticles(m_jointParticle);
     m_jointParticle.remapOutcast();
-  } 
+  }
 
   // If we are on the finest level, define elliptic solvers
   if (m_isThisFinestLev)
@@ -981,7 +981,7 @@ levelSetup()
                                 numComp,
                                 nRefCrse);
 
-      m_quadCFInterpPhi.define(m_grids, &crseGrids, m_dx, 
+      m_quadCFInterpPhi.define(m_grids, &crseGrids, m_dx,
                                nRefCrse, 1, m_problem_domain);
 
       m_fineInterpRhs.define(m_grids, 1, nRefCrse, m_problem_domain);
@@ -997,7 +997,7 @@ levelSetup()
                          m_patchParticle);
 }
 
-void 
+void
 AMRLevelPIC::
 aggregateParticles(ParticleData<JointParticle>& a_particles)
 {
@@ -1139,7 +1139,7 @@ void AMRLevelPIC::secondOrderCorrection()
     }
 }
 
-void 
+void
 AMRLevelPIC::
 defineEllipticSolvers(const int a_baseLevel)
 {
@@ -1180,7 +1180,7 @@ defineEllipticSolvers(const int a_baseLevel)
   s_gravMGSolver->m_verbosity = 3;
 }
 
-Vector<AMRLevelPIC*> 
+Vector<AMRLevelPIC*>
 AMRLevelPIC::
 getAMRHierarchy()
 {
@@ -1249,7 +1249,7 @@ LevelData<FArrayBox>* AMRLevelPIC::getPhi(const Real& a_time)
 
 LevelData<FArrayBox>* AMRLevelPIC::getPoissonRhs(const Real& a_time)
 {
-  
+
   if (m_verbosity >= 3)
     {
       pout() << " AMRLevelPIC:: getPoissonRhs: level " << m_level << endl;
@@ -1318,7 +1318,7 @@ void AMRLevelPIC::ellipticSolver(const int  a_baseLevel,
   // get pointers to all the levels in the hierarchy
   Vector<AMRLevelPIC*> amrLevels = getAMRHierarchy();
 
-  // If we're doing a level solve, the finest level and the 
+  // If we're doing a level solve, the finest level and the
   // base level are the same. If we're doing a full multilevel
   // solve, we want to go all the way to the top of the hierarchy.
   int finestLevel = m_level;
@@ -1352,8 +1352,8 @@ void AMRLevelPIC::ellipticSolver(const int  a_baseLevel,
       amrRhs[lev]=amrLevels[lev]->getPoissonRhs(m_time);
     }
 
-  // if we are using periodic boundary conditions, we have to ensure 
-  // that the sum of the RHS is zero. We do this here. 
+  // if we are using periodic boundary conditions, we have to ensure
+  // that the sum of the RHS is zero. We do this here.
   bool isDomainCovered = (a_baseLevel == 0);
   if (m_problem_domain.isPeriodic())
     {
@@ -1502,7 +1502,7 @@ void AMRLevelPIC::makePoissonRhs(LevelData<FArrayBox>&       a_rhs,
       // interpolate in time
       interpolateInTime(rhsCrse,m_rhsCrseOld,m_rhsCrseNew,
                         a_time,tNew,tOld,m_dt,
-                        Interval(0,0),Interval(0,0), IntVect::Zero);     
+                        Interval(0,0),Interval(0,0), IntVect::Zero);
 
       m_fineInterpRhs.pwcinterpToFine(a_rhs, rhsCrse);
     }

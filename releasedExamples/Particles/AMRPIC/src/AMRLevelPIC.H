@@ -69,19 +69,19 @@ AMRLevelPIC(const ZeldovichIBC* a_ibc,
             const InterpType&   a_poissonInterpType,
             const Real&         a_refineThresh)
   {
-    
+
     m_patchParticle = NULL;
     m_ibc = NULL;
-    m_isDefined = false;    
-    
-    define(a_ibc, 
-           a_cfl, 
-           a_domainLength, 
-           a_maxBoxSize, 
+    m_isDefined = false;
+
+    define(a_ibc,
+           a_cfl,
+           a_domainLength,
+           a_maxBoxSize,
            a_poissonInterpType,
            a_refineThresh);
   }
-  
+
 /// Defines this AMRLevelPIC
 void define(const ZeldovichIBC* a_ibc,
             const Real&         a_cfl,
@@ -175,14 +175,14 @@ void aggregateParticles(ParticleData<JointParticle>& a_particles);
 
 /// amrSync performs a full, multilevel Poisson solve starting on
 /// a_baseLevel and including all finer levels. This both computes
-/// the composite potential and updates the forces. If a_srceCorr is 
+/// the composite potential and updates the forces. If a_srceCorr is
 /// true, the resulting forces will also be used to apply 2nd-order
 /// corrections to the particle positions and velocities on all affected
-/// levels. 
+/// levels.
 void amrSync(const int a_baseLevel, const bool a_srceCorr=true);
 
 /// Computes the force associated with the current potential and uses
-/// it to apply second order corrections to the particle positions and 
+/// it to apply second order corrections to the particle positions and
 /// velocities on this level.
 void secondOrderCorrection();
 
@@ -208,15 +208,15 @@ void computeForce(LevelData<FArrayBox>& a_force,
                   LevelData<FArrayBox>& a_phi,
                   const Real&           a_time);
 
-/// actually solve Poisson's equation. If a_isLevelSolve is true, 
+/// actually solve Poisson's equation. If a_isLevelSolve is true,
 /// then this will only do this level. If it is false, it will do
 /// this and all finder levels.
 void ellipticSolver(const int  a_baseLevel,
                     const bool a_isLevelSolve);
 
 /// This generates the RHS for Poisson's equations from the particles
-/// on this level. It also includes a contribution for particles on 
-/// coarser levels whose clouds hang over this level's grids. 
+/// on this level. It also includes a contribution for particles on
+/// coarser levels whose clouds hang over this level's grids.
 void makePoissonRhs(LevelData<FArrayBox>&          a_rhs,
                     const ParticleData<Particle>&  a_P,
                     const ParticleData<JointParticle>& a_jointP,
@@ -247,12 +247,12 @@ InterpType           m_poissonInterpType;
 const static int     m_buffer = 2;
 const static int     m_verbosity = 3;
 
-// m_hasFiner tells you whether there are *allowed* 
+// m_hasFiner tells you whether there are *allowed*
 // to be finer or levels in the AMR hierarchy. These
 // levels do not neccessarily have to have any data yet,
 // if, say, the refinement criteria have not yet required
-// that a finer level be used. m_isThisFinestLev tracks 
-// whether this the finest level that actually contains 
+// that a finer level be used. m_isThisFinestLev tracks
+// whether this the finest level that actually contains
 // data.
 bool                 m_hasCoarser;
 bool                 m_hasFiner;
@@ -276,7 +276,7 @@ ZeldovichIBC* m_ibc;
 ParticleValidRegion  m_PVR;
 
 // Right-hand side of the Poisson equation
-LevelData<FArrayBox> m_rhs;      
+LevelData<FArrayBox> m_rhs;
 
 // the contribution to the RHS from particles that live on the next
 // coarser level, at the old and new times.
@@ -303,12 +303,12 @@ LevelParticle m_levelParticle;
 
 // Patch Integrator for particles
 PatchParticle* m_patchParticle;
-  
-/// We have two different Copiers for ghost exchange operations. 
+
+/// We have two different Copiers for ghost exchange operations.
 /// The first is used for the normal exchange, which copies from valid
 /// to ghost cells. The second reverses this pattern of communication,
-/// moving data FROM ghost TO valid cells. This is needed during the 
-/// mass deposition step. 
+/// moving data FROM ghost TO valid cells. This is needed during the
+/// mass deposition step.
 Copier               m_forwardCopier;
 Copier               m_reverseCopier;
 

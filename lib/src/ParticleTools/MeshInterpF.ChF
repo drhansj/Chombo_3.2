@@ -37,11 +37,23 @@ c     assign the particle mass to that cell
 
       end
       subroutine ngp_deposit_velocity(
-     &                                CHF_FRA1[v_field],
+     &                                CHF_FRA[v_field],
      &                                CHF_CONST_REALVECT[left_edge],
      &                                CHF_CONST_REALVECT[dx],
      &                                CHF_CONST_REALVECT[x],
      &                                CHF_CONST_REALVECT[velocity] )
+
+      integer index(0:CH_SPACEDIM - 1)
+      integer idir
+
+c     compute the index of the cell containing this particle
+      do idir = 0, CH_SPACEDIM -1
+        index(idir) = floor((x(idir) - left_edge(idir)) / dx(idir))
+      enddo
+
+      do idir = 0, CH_SPACEDIM -1
+        v_field(CHF_IX[index(0); index(1); index(2); index(3); index(4); index(5)], idir) = velocity(idir)
+      enddo
 
       end
 
@@ -151,8 +163,8 @@ c     computing weight and assigning mass
       end
 
       subroutine cic_deposit_velocity(
-     &                                CHF_FRA1[v_field],
-     &                                CHF_CONST_FRA[rho],
+     &                                CHF_FRA[v_field],
+     &                                CHF_CONST_FRA1[rho],
      &                                CHF_CONST_REALVECT[left_edge],
      &                                CHF_CONST_REALVECT[dx],
      &                                CHF_CONST_REALVECT[x],
@@ -202,7 +214,9 @@ c     computing weight and assigning mass
         weight = CHF_DTERM[w0; *w1; *w2; *w3; *w4; *w5]
 
           do idir = 0, CH_SPACEDIM - 1
-            particle_momentum =  q
+            particle_momentum =  q*velocity(idir)/volume
+            v_field(CHF_IX[ii; jj; kk; ll; mm; nn], idir) = v_field(CHF_IX[ii; jj; kk; ll; mm; nn], idir) +  particle_momentum*weight/rho(CHF_IX[ii; jj; kk; ll; mm; nn])
+
           enddo
 
         CHF_DTERM[
@@ -392,13 +406,102 @@ c     computing weight and assigning mass
       end
 
       subroutine tsc_deposit_velocity(
-     &                                CHF_FRA1[v_field],
-     &                                CHF_CONST_FRA[rho],
+     &                                CHF_FRA[v_field],
+     &                                CHF_CONST_FRA1[rho],
      &                                CHF_CONST_REALVECT[left_edge],
      &                                CHF_CONST_REALVECT[dx],
      &                                CHF_CONST_REALVECT[x],
      &                                CHF_CONST_REALVECT[velocity],
      &                                CHF_CONST_REAL[q] )
+
+      integer index(0:CH_SPACEDIM - 1)
+      integer idir
+      REAL_T volume, CHF_DDECL[l0;l1;l2;l3;l4;l5]
+      REAL_T weight, CHF_DDECL[w0;w1;w2;w3;w4;w5]
+      integer CHF_DDECL[ii;jj;kk;ll;mm;nn]
+
+      REAL_T particle_momentum
+c     compute the cell volume and particle density on the grid
+      volume = CHF_DTERM[dx(0);*dx(1);*dx(2);*dx(3);*dx(4);*dx(5)]
+
+
+c     compute the index of the cell that contains the LEFT edge of
+c     this particle cloud.
+      do idir = 0, CH_SPACEDIM - 1
+        index(idir) = floor((x(idir) - left_edge(idir) - 1.0d0*dx(idir)) / dx(idir))
+      enddo
+
+
+c     loop over all the cells containing this particle cloud,
+c     computing weight and assigning mass
+      CHF_DTERM[
+      do ii = index(0), index(0) + 2
+        l0 = ii*dx(0) + 0.5d0*dx(0) - x(0) + left_edge(0);
+        do jj = index(1), index(1) + 2
+          l1 = jj*dx(1) + 0.5d0*dx(1) - x(1) + left_edge(1);
+          do kk = index(2), index(2) + 2
+            l2 = kk*dx(2) + 0.5d0*dx(2) - x(2) + left_edge(2);
+            do ll = index(3), index(3) + 2
+              l3 = ll*dx(3) + 0.5d0*dx(3) - x(3) + left_edge(3);
+              do mm = index(4), index(4) + 2
+                l4 = mm*dx(4) + 0.5d0*dx(4) - x(4) + left_edge(4);
+                do nn = index(5), index(5) + 2
+                  l5 = nn*dx(5) + 0.5d0*dx(5) - x(5) + left_edge(5)]
+
+                  CHF_DTERM[
+                        if (abs(l0 / dx(0)) .lt. 0.5d0) then
+                          w0 = 7.5d-1 - (l0 / dx(0))**2.d0
+                        else
+                          w0 = 0.5d0 * (1.5d0 - abs(l0 / dx(0)))**2.d0
+                        endif
+                        ;
+                        if (abs(l1 / dx(1)) .lt. 0.5d0) then
+                          w1 = 7.5d-1 - (l1 / dx(1))**2.d0
+                        else
+                          w1 = 0.5d0 * (1.5d0 - abs(l1 / dx(1)))**2.d0
+                        endif
+                        ;
+                        if (abs(l2 / dx(2)) .lt. 0.5d0) then
+                          w2 = 7.5d-1 - (l2 / dx(2))**2.d0
+                        else
+                          w2 = 0.5d0 * (1.5d0 - abs(l2 / dx(2)))**2.d0
+                        endif
+                        ;
+                        if (abs(l3 / dx(3)) .lt. 0.5d0) then
+                          w3 = 7.5d-1 - (l3 / dx(3))**2.d0
+                        else
+                          w3 = 0.5d0 * (1.5d0 - abs(l3 / dx(3)))**2.d0
+                        endif
+                        ;
+                        if (abs(l4 / dx(4)) .lt. 0.5d0) then
+                          w4 = 7.5d-1 - (l4 / dx(4))**2.d0
+                        else
+                          w4 = 0.5d0 * (1.5d0 - abs(l4 / dx(4)))**2.d0
+                        endif
+                        ;
+                        if (abs(l5 / dx(5)) .lt. 0.5d0) then
+                          w5 = 7.5d-1 - (l5 / dx(5))**2.d0
+                        else
+                          w5 = 0.5d0 * (1.5d0 - abs(l5 / dx(5)))**2.d0
+                        endif
+                        ]
+
+                        weight = CHF_DTERM[w0; *w1; *w2; *w3; *w4; *w5]
+                        do idir = 0, CH_SPACEDIM - 1
+                          particle_momentum =  q*velocity(idir)/ volume
+                          v_field(CHF_IX[ii; jj; kk; ll; mm; nn], idir) = v_field(CHF_IX[ii; jj; kk; ll; mm; nn], idir) +  particle_momentum*weight/rho(CHF_IX[ii; jj; kk; ll; mm; nn])
+
+                        enddo
+
+
+      CHF_DTERM[
+                enddo;
+              enddo;
+            enddo;
+          enddo;
+        enddo;
+      enddo]
+
 
       end
 

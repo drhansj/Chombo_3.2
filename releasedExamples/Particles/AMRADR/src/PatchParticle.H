@@ -16,7 +16,6 @@
 #include "ListBox.H"
 #include "ListBoxFactory.H"
 #include "MeshInterp.H"
-#include "Cosmology.H"
 
 #include <string>
 using std::string;
@@ -41,10 +40,9 @@ public:
   /// full constructor
   PatchParticle(const ProblemDomain&     a_domain,
                 const Real&              a_dx,
-                const InterpType&        a_poissonInterpType,
-                const Cosmology&         a_cosmology)
+                const InterpType&        a_poissonInterpType)
   {
-    define(a_domain, a_dx, a_poissonInterpType, a_cosmology);
+    define(a_domain, a_dx, a_poissonInterpType);
   }
 
   /// Destructor
@@ -53,8 +51,7 @@ public:
   /// same as full constructor
   virtual void define(const ProblemDomain&     a_domain,
                       const Real&              a_dx,
-                      const InterpType&        a_poissonInterpType,
-                      const Cosmology&         a_cosmology);
+                      const InterpType&        a_poissonInterpType);
 
   // set parameters
   virtual void setParameters(const InterpType& a_poissonInterpType);
@@ -68,12 +65,6 @@ public:
   /// Factory method - this object is its own factory
   virtual PatchParticle* new_patchParticle() const;
 
-  /// set coefficients for particle pusher
-  void setPusherCoeff(const Real& a_time, const Real& a_dt);
-
-  // set m_isPusherCoeffSet=false
-  virtual void resetPusherCoeff();
-
   // return interpolation scheme used by the patcher
   virtual const InterpType& interpOrder() const;
 
@@ -85,6 +76,13 @@ public:
   void deposit(FArrayBox&        a_rho,
                const ListBox<P>& a_PH,
                const Box&        a_box);
+
+  /// Compute the mass distribution given a particle ListBox
+  template <class P>
+  void depositVelocity(FArrayBox& a_v_field,
+                       FArrayBox&        a_rho,
+                       const ListBox<P>& a_PH,
+                       const Box&        a_box);
 
   /// Update/correct the particle variables and return the max
   /// particle speed.
@@ -108,22 +106,6 @@ public:
                        const Box&        a_box);
 
 protected:
-  /// KDK particle pusher: advances particles x,v by dt
-  template <class P, class FTypeBox>
-  Real KDK_Pusher(ListBox<P>&      a_PH,
-                  const FTypeBox&  a_F,
-                  const Box&       a_box);
-
-  /// KDK particle pusher: applies 2nd order corrections to particles x,v
-  template <class P, class FTypeBox>
-  void KDK_Corrector(ListBox<P>&      a_PH,
-                     const FTypeBox&  a_F,
-                     const Box&       a_box);
-
-  // set coefficients for KDK pusher
-  void KDK_PusherCoeff(const Real& a_time, const Real& a_dt);
-
-protected:
 
   // Has define() been called?
   bool m_isDefined;
@@ -133,20 +115,11 @@ protected:
   Real m_dx;
   RealVect m_origin;
 
-  // Handles cosmic expansion
-  Cosmology m_cosmology;
-
   // Interpolation order
   InterpType m_poissonInterpType;
 
   // was setParameters called?
   bool m_isParametersSet;
-
-  // timestep, pusher time coeff. and have they been set
-  Real m_dt;
-  Real m_coef_exp_pred, m_coef_vel_pred, m_coef_acc_pred;
-  Real m_coef_exp, m_coef_vel, m_coef_acc;
-  bool m_isPusherCoeffSet;
 
   // MeshInterp object: manages particle-grid operations
   MeshInterp* m_meshInterp;

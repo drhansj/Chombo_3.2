@@ -27,6 +27,7 @@ public:
   AMRLevelTracerFactory(AdvectionVelocityFunction a_advFunc,
                         const Real& a_cfl,
                         const Real& a_domainLength,
+                        const InterpType& a_poissonInterpType,
                         const int&  a_maxGridSize);
 
 
@@ -44,6 +45,7 @@ protected:
   Real                      m_cfl;
   Real                      m_domainLength;
   int                       m_maxGridSize;
+  InterpType                m_poissonInterpType;  
 
 private:
 

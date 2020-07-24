@@ -48,6 +48,15 @@ define(AdvectionVelocityFunction a_advFunc,
   m_domainLength = a_domainLength;
   m_poissonInterpType = a_poissonInterpType;
   m_maxBoxSize = a_maxBoxSize;
+  m_numForceGhost = 1;
+
+  if (m_patchParticle != NULL)
+    {
+      delete m_patchParticle;
+      m_patchParticle = NULL;
+    }
+
+  m_patchParticle = new PatchParticle();
 }
 
 /********/
@@ -71,6 +80,7 @@ void AMRLevelTracer::define(AMRLevel*            a_coarserLevelPtr,
           define(amrPartPtr->m_advFunc,
                  amrPartPtr->m_cfl,
                  amrPartPtr->m_domainLength,
+                 amrPartPtr->m_poissonInterpType,
                  amrPartPtr->m_maxBoxSize);
         }
       else
@@ -83,6 +93,9 @@ void AMRLevelTracer::define(AMRLevel*            a_coarserLevelPtr,
   m_dx          = m_domainLength/a_problemDomain.domainBox().longside();
   m_meshSpacing = RealVect(D_DECL(m_dx, m_dx, m_dx));
   m_origin      = RealVect(D_DECL(0.0, 0.0, 0.0));
+
+  m_patchParticle->define(m_problem_domain, m_dx,
+                          m_poissonInterpType);
 
   m_numGhost = 1;
 }
@@ -151,6 +164,8 @@ advance()
   // rebin
   m_PNew.gatherOutcast();
   m_PNew.remapOutcast();
+
+  depositMass( m_rho, m_PNew, m_jointParticle);
 
   // Update the time and store the new timestep
   m_time += m_dt;
@@ -284,18 +299,25 @@ preRegrid(int a_base_level,
   }
 
   CH_assert(baseLevelPtr->m_level == a_base_level);
-
-  DataIterator dit(m_grids);
-  for (dit.reset(); dit.ok(); ++dit)
+  // We are regridding on level a_base_level; all particles that
+  // live on finer levels should be removed and added here. There is
+  // probably a better way to do this.
+  AMRLevelTracer* amrFinerPtr = getFinerLevel();
+  while (amrFinerPtr != NULL)
   {
-    // Transfer all particles on this level to a_base_level
-    for (ListIterator<Particle> li (m_PNew[dit].listItems()); li.ok(); )
+    DataIterator dit(amrFinerPtr->m_grids);
+    for (dit.reset(); dit.ok(); ++dit)
     {
-      baseLevelPtr->m_PNew.outcast().transfer(li);
+      // Transfer all particles on this level to a_base_level
+      for (ListIterator<Particle> li (amrFinerPtr->m_PNew[dit].listItems()); li.ok(); )
+      {
+        baseLevelPtr->m_PNew.outcast().transfer(li);
+      }
     }
 
-  }
+    amrFinerPtr = amrFinerPtr->getFinerLevel();
 
+  }
   // This level should now be empty
   CH_assert(countItems() == 0);
 
@@ -329,9 +351,85 @@ regrid(const Vector<Box>& a_newGrids)
                 m_meshSpacing, m_origin);
   m_POld.define(m_grids, m_problem_domain, m_maxBoxSize,
                 m_meshSpacing, m_origin);
+  m_jointParticle.define(m_grids, m_problem_domain, m_maxBoxSize,
+                         m_meshSpacing, m_origin);
+  // Define old and new mesh data structures
+  m_rho.define(m_grids, 1, m_numForceGhost*IntVect::Unit);
+
+  m_v_field.define(m_grids, CH_SPACEDIM, m_numForceGhost*IntVect::Unit);
+
+  // initialize everything to zero (do I really want to do this?)
+  DataIterator dit = m_grids.dataIterator();
+  for(dit.reset(); dit.ok(); ++dit)
+    {
+      m_rho[dit()].setVal(0.0);
+      m_v_field[dit()].setVal(0.0);
+    }
 
   // Set up data structures
   levelSetup();
+  if (m_hasCoarser)
+  {
+    AMRLevelTracer* coarserLevelPtr = getCoarserLevel();
+    DisjointBoxLayout crseGrids;
+    coarsen(crseGrids,m_grids,coarserLevelPtr->refRatio());
+    m_rhoCrse.define(crseGrids,1);
+  }
+}
+
+void
+AMRLevelTracer::
+aggregateParticles(ParticleData<JointParticle>& a_particles)
+{
+
+  CH_TIME("AMRLevelPIC::aggregateParticles");
+
+  if (m_verbosity >= 3)
+    {
+      pout() << "AMRLevelPIC::aggregateParticles " << m_level << endl;
+    }
+
+  a_particles.clear();
+  List<JointParticle>& plist = a_particles.outcast();
+
+  // coarse dx
+  const RealVect cdx = m_meshSpacing * getCoarserLevel()->m_ref_ratio;
+
+  for (DataIterator di(m_grids); di.ok(); ++di)
+    {
+      // map part pos to bins
+      std::map<IntVect,JointParticle,CompIntVect> mip;
+
+      binmapParticles(mip,m_PNew[di].listItems(), cdx, m_origin);
+
+      if (m_hasFiner)
+        {
+          binmapParticles(mip,m_jointParticle[di].listItems(), cdx, m_origin);
+        }
+
+      for (map<IntVect,JointParticle,CompIntVect>::iterator it=mip.begin(); it!=mip.end(); ++it)
+        {
+          plist.add(it->second);
+        }
+    }
+
+  // now do outcasts
+  {
+    // map part pos to bins
+    std::map<IntVect,JointParticle,CompIntVect> mip;
+
+    binmapParticles(mip,m_PNew.outcast(), cdx, m_origin);
+
+    for (map<IntVect,JointParticle,CompIntVect>::iterator it=mip.begin(); it!=mip.end(); ++it)
+      {
+        plist.add(it->second);
+      }
+  }
+
+  if (m_verbosity >= 3)
+    {
+      pout() << "AMRLevelPIC::aggregateParticles done " << endl;
+    }
 
 }
 
@@ -349,6 +447,26 @@ postRegrid(int a_baseLevel)
       pout() << "AMRLevelTracer::postRegrid " << m_level << endl;
     }
 
+  if (m_hasFiner)
+    {
+      m_isThisFinestLev = (m_grids.size()>0 && getFinerLevel()->m_grids.size()<=0);
+    }
+  if (m_isThisFinestLev)
+  {
+    AMRLevelTracer* coarserLevelPtr = getCoarserLevel();
+    while (coarserLevelPtr != NULL)
+    {
+      coarserLevelPtr->m_isThisFinestLev = 0;
+      coarserLevelPtr = coarserLevelPtr->getCoarserLevel();
+    }
+
+    AMRLevelTracer* finerLevelPtr = getFinerLevel();
+    while (finerLevelPtr != NULL)
+    {
+      finerLevelPtr->m_isThisFinestLev = 0;
+      finerLevelPtr = finerLevelPtr->getFinerLevel();
+    }
+  }
   // get pointer to a_base_level, and compute total refRatio between
   // this level and a_baseLevel.
   AMRLevelTracer* baseLevelPtr = this;
@@ -371,75 +489,16 @@ postRegrid(int a_baseLevel)
   // remap outcast on this level
   m_PNew.remapOutcast();
 
+  // Here is where we should collect the Joint Particles from the finer level
+  if (m_hasFiner)
+  {
+    AMRLevelTracer* amrFinePtr = getFinerLevel();
+    amrFinePtr->aggregateParticles(m_jointParticle);
+    m_jointParticle.remapOutcast();
+  }
+
 }
 
-void AMRLevelTracer::setParameters(const InterpType& a_poissonInterpType)
-{
-  m_poissonInterpType = a_poissonInterpType;
-  m_isParametersSet = true;
-}
-
-/// get particle-mesh object
-MeshInterp* AMRLevelTracer::getMeshInterp() const
-{
-  CH_assert(m_isMeshInterpSet);
-  return m_meshInterp;
-}
-
-
-// Set MeshInterp object
-void AMRLevelTracer::setMeshInterp(const InterpType& a_poissonInterpType)
-{
-  CH_assert(m_isParametersSet);
-  CH_assert(a_poissonInterpType == m_poissonInterpType);
-
-  if (m_meshInterp != NULL)
-    {
-      delete m_meshInterp;
-    }
-
-  m_meshInterp = static_cast<MeshInterp* > (new MeshInterp(m_domain.domainBox(),
-                                                           RealVect(D_DECL(m_dx, m_dx, m_dx)),
-                                                           m_origin));
-
-  m_isMeshInterpSet = true;
-}
-
-// Distribute particle mass onto the grid. If the particles' clouds
-// extend outside the current box, an error will be thrown.
-template <class P>
-void AMRLevelTracer::deposit(FArrayBox&        a_rho,
-                            const ListBox<P>& a_listBox,
-                            const Box&        a_box)
-{
-  CH_assert(isDefined());
-
-  CH_assert(m_dx == a_listBox.meshSpacing()[0]);
-  CH_assert(a_rho.box().contains(a_box));
-
-  m_meshInterp->deposit(a_listBox.listItems(),
-                        a_rho,
-                        m_poissonInterpType);
-}
-
-// Distribute particle mass onto the grid. If the particles' clouds
-// extend outside the current box, an error will be thrown.
-template <class P>
-void AMRLevelTracer::depositVelocity(FArrayBox&        a_v_field,
-                                        const FArrayBox&  a_rho,
-                                        const ListBox<P>& a_listBox,
-                                        const Box&        a_box)
-{
-  CH_assert(isDefined());
-
-  CH_assert(m_dx == a_listBox.meshSpacing()[0]);
-  CH_assert(a_rho.box().contains(a_box));
-
-  m_meshInterp->deposit(a_listBox.listItems(),
-                        a_v_field,
-                        a_rho,
-                        m_poissonInterpType);
-}
 
 /*******/
 void
@@ -458,9 +517,26 @@ initialGrid(const Vector<Box>& a_newGrids)
                 m_meshSpacing, m_origin);
   m_POld.define(m_grids, m_problem_domain, m_maxBoxSize,
                 m_meshSpacing, m_origin);
+  // Define old and new mesh data structures
+  m_rho.define(m_grids, 1, m_numForceGhost*IntVect::Unit);
+  // Define old and new mesh data structures
+  m_v_field.define(m_grids, CH_SPACEDIM, m_numForceGhost*IntVect::Unit);
 
-  // Set up data structures
+  // initialize everything to zero (do I really want to do this?)
+  DataIterator dit = m_grids.dataIterator();
+  for(dit.reset(); dit.ok(); ++dit)
+    {
+      m_rho[dit()].setVal(0.0);
+      m_v_field[dit()].setVal(0.0);
+    }
   levelSetup();
+  if (m_hasCoarser)
+  {
+    AMRLevelTracer* coarserLevelPtr = getCoarserLevel();
+    DisjointBoxLayout crseGrids;
+    coarsen(crseGrids,m_grids,coarserLevelPtr->refRatio());
+    m_rhoCrse.define(crseGrids,1);
+  }
 }
 
 /*******/
@@ -658,6 +734,95 @@ writePlotHeader(HDF5Handle& a_handle) const
   header.writeToFile(a_handle);
 
 }
+void AMRLevelTracer::depositMass(LevelData<FArrayBox>&       a_rho,
+                                 const ParticleData<Particle>&  a_P,
+                                 const ParticleData<JointParticle>& a_jointP)
+{
+  if (m_verbosity >= 3)
+    {
+      pout() << "AMRLevelPIC::depositMass: level " << m_level << endl;
+    }
+
+  const DisjointBoxLayout& grids = a_rho.getBoxes();
+  DataIterator di = grids.dataIterator();
+
+  // 0. set rhs = 0
+  setToVal(a_rho, 0.0);
+
+  // Deposit particles
+  if (a_P.isDefined())
+    {
+      CH_assert(a_P.isClosed());
+      CH_TIME("depositMass::particles");
+
+      for (DataIterator di(m_grids); di.ok(); ++di)
+        {
+          m_patchParticle->deposit(a_rho[di], a_P[di], m_grids[di]);
+        }
+    }
+}
+void AMRLevelTracer::depositVelocity(LevelData<FArrayBox>&       a_v_field,
+                                     LevelData<FArrayBox>&       a_rho,
+                                     const ParticleData<Particle>&  a_P,
+                                     const ParticleData<JointParticle>& a_jointP)
+{
+  if (m_verbosity >= 3)
+    {
+      pout() << "AMRLevelPIC::depositMass: level " << m_level << endl;
+    }
+
+  const DisjointBoxLayout& grids = a_rho.getBoxes();
+  DataIterator di = grids.dataIterator();
+
+  setToVal(a_v_field, 0.0);
+
+  // Deposit particles
+  if (a_P.isDefined())
+    {
+      CH_assert(a_P.isClosed());
+      CH_TIME("depositMass::particles");
+
+      for (DataIterator di(m_grids); di.ok(); ++di)
+        {
+          m_patchParticle->depositVelocity(a_v_field[di], a_rho[di], a_P[di], m_grids[di]);
+        }
+    }
+}
+
+void AMRLevelTracer::makePoissonRhs(LevelData<FArrayBox>&       a_rhs,
+                                          const ParticleData<Particle>&  a_P,
+                                          const ParticleData<JointParticle>& a_jointP)
+{
+
+  CH_TIME("AMRLevelPIC::makePoissonRhs");
+
+  // I am assuming they are all defined on the same grids; assert()
+  // this along the way
+
+  if (m_verbosity >= 3)
+    {
+      pout() << "AMRLevelPIC::makePoissonRhs: level " << m_level << endl;
+    }
+
+  const DisjointBoxLayout& grids = a_rhs.getBoxes();
+  DataIterator di = grids.dataIterator();
+
+  // 0. set rhs = 0
+  setToVal(a_rhs, 0.0);
+
+  // Deposit particles
+  if (a_P.isDefined())
+    {
+      CH_assert(a_P.isClosed());
+      CH_TIME("makePoissonRhs::particles");
+
+      for (DataIterator di(m_grids); di.ok(); ++di)
+        {
+          m_patchParticle->deposit(a_rhs[di], a_P[di], m_grids[di]);
+        }
+    }
+}
+
 
 /*******/
 void
@@ -708,47 +873,20 @@ writePlotLevel(HDF5Handle& a_handle) const
   // Write the header for this level
   header.writeToFile(a_handle);
 
-    // now write out our particles
+  // now write out our particles
   writeParticlesToHDF(a_handle, m_PNew, "particles");
 
-  LevelData<FArrayBox> m_velocity_field;
-  LevelData<FArrayBox> m_rho;
-  const DisjointBoxLayout& grids = m_velocity_field.getBoxes();
-  DataIterator di = grids.dataIterator();
-
-  setToVal(m_velocity_field,0.0);
-  setToVal(m_rho,0.0);
-  if (m_PNew.isDefined())
-    {
-      CH_assert(m_PNew.isClosed());
-
-      for (DataIterator di(m_grids); di.ok(); ++di)
-        {
-          CH_assert(m_dx == m_PNew[di].meshSpacing()[0]);
-          CH_assert(m_rho[di].box().contains(m_grids[di]));
-          m_meshInterp->deposit(m_PNew[di].listItems(), m_rho[di], m_poissonInterpType);
-        }
-    }
-    if (m_PNew.isDefined())
-      {
-        CH_assert(m_PNew.isClosed());
-
-        for (DataIterator di(m_grids); di.ok(); ++di)
-          {
-            CH_assert(m_dx == m_PNew[di].meshSpacing()[0]);
-            CH_assert(m_rho[di].box().contains(m_grids[di]));
-            m_meshInterp->depositVelocity(m_PNew[di].listItems(), m_velocity_field[di], m_rho[di], m_poissonInterpType);
-          }
-      }
-      outputData.define(m_grids, numComps, IntVect::Zero);
+  // write out mesh fields
+  LevelData<FArrayBox> outputData;
+  int numComps = 1 + CH_SPACEDIM;
+  outputData.define(m_grids, numComps, IntVect::Zero);
 
   // do copies
   m_rho.copyTo(Interval(0, 0), outputData, Interval(0, 0));
-  m_velocity_field.copyTo(Interval(0, CH_SPACEDIM - 1), outputData, Interval(2, CH_SPACEDIM + 1));
+  m_v_field.copyTo(Interval(0, CH_SPACEDIM - 1), outputData, Interval(2, CH_SPACEDIM + 1));
 
-  write(a_handle, m_rhs.boxLayout());
+  write(a_handle, m_rho.boxLayout());
   write(a_handle, outputData, "data");
-
 }
 #endif
 

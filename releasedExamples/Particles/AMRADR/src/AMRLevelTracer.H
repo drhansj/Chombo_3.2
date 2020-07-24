@@ -22,6 +22,8 @@
 #include "AdvectionFunctions.H"
 #include "ParticleData.H"
 #include "ParticleValidRegion.H"
+#include "LevelParticle.H"
+#include "JointParticle.H"
 
 #include "ProblemDomain.H"
 #include "IntVectSet.H"
@@ -41,6 +43,7 @@ public:
   /// Default constructor
   AMRLevelTracer()
   {
+    m_patchParticle = NULL;
     m_isDefined = false;
   }
 
@@ -52,6 +55,7 @@ public:
                  const int& a_maxBoxSize)
   {
     m_isDefined = false;
+    m_patchParticle = NULL;
     define(a_advFunc, a_cfl, a_domainLength, a_poissonInterpType, a_maxBoxSize);
   }
 
@@ -83,14 +87,45 @@ public:
   /// Advance by one timestep
   virtual Real advance();
 
+  /// Sort JointParticles into bins based on the mesh spacing.
+  template <class P>
+  void binmapParticles(std::map<IntVect,JointParticle,CompIntVect>& a_mip,
+                      const List<P>&                               a_part,
+                      const RealVect&                              a_meshSpacing,
+                      const RealVect&                              a_origin)
+  {
+  CH_TIMERS("binmapParticles");
+
+  for (ListIterator<P> li(a_part); li; ++li)
+    {
+      const P& p = li();
+      const IntVect bin = locateBin(p.position(), a_meshSpacing, a_origin);
+
+      map<IntVect,JointParticle,CompIntVect>::iterator it = a_mip.find(bin);
+
+      if (it == a_mip.end())
+        {
+          a_mip[bin] = JointParticle(p.mass(),p.position(),p.velocity(),1);
+        }
+      else
+        {
+          it->second.addParticle( &p );
+        }
+    }
+  }
+
+  /// Set to val defined for an entire BoxLayoutData
+  template<class T, class V>
+  inline void setToVal(BoxLayoutData<T>& a_lt, const V a_v)
+  {
+    for (DataIterator di=a_lt.dataIterator();di.ok();++di)
+      {
+        a_lt[di].setVal(a_v);
+      }
+  }
+
   /// Things to do after a timestep
   virtual void postTimeStep();
-
-  // set parameters
-  virtual void setParameters(const InterpType& a_poissonInterpType);
-
-  /// Set the MeshInterp object
-  virtual void setMeshInterp(const InterpType& a_poissonInterpType);
 
   /// get MeshInterp object
   MeshInterp* getMeshInterp() const;
@@ -119,6 +154,8 @@ public:
 
   /// Things to do after initialization
   virtual void postInitialize();
+
+
 
 #ifdef CH_USE_HDF5
   /// Write checkpoint header
@@ -151,8 +188,27 @@ protected:
   // Setup menagerie of data structures
   void levelSetup();
 
+  /// collect Particles from finer levels into the Joint particle list
+  void aggregateParticles(ParticleData<JointParticle>& a_particles);
+
   // the total number of particles on this level
   int countItems() const;
+
+  /// This generates the RHS for Poisson's equations from the particles
+  /// on this level. It also includes a contribution for particles on
+  /// coarser levels whose clouds hang over this level's grids.
+  void makePoissonRhs(LevelData<FArrayBox>&          a_rhs,
+                      const ParticleData<Particle>&  a_P,
+                      const ParticleData<JointParticle>& a_jointP);
+
+  void depositMass(LevelData<FArrayBox>&       a_rho,
+                   const ParticleData<Particle>&  a_P,
+                   const ParticleData<JointParticle>& a_jointP);
+
+  void depositVelocity(LevelData<FArrayBox>&       a_v_field,
+                       LevelData<FArrayBox>&       a_rho,
+                       const ParticleData<Particle>&  a_P,
+                       const ParticleData<JointParticle>& a_jointP);
 
   // total number of outcast particles
   int countOutcast() const;
@@ -166,10 +222,16 @@ protected:
   // Particles at the old and new times
   ParticleData<Particle> m_POld, m_PNew;
 
+  // Joint Particles that represent the net effect of the particles
+  // that live on finer levels
+  ParticleData<JointParticle> m_jointParticle;
+
   // MeshInterp object: manages particle-grid operations
   MeshInterp* m_meshInterp;
   bool m_isMeshInterpSet;
-  
+
+  bool m_isParametersSet;
+
   bool                 m_isDefined;
   Real                 m_cfl;
   Real                 m_domainLength;
@@ -183,6 +245,7 @@ protected:
   Real                 m_dtNew;
   int                  m_numGhost;
   int                  m_maxBoxSize;
+  Real                 m_numForceGhost;
   const static int     m_buffer = 2;
   const static int     m_verbosity = 1;
 
@@ -190,9 +253,18 @@ protected:
 
   bool                 m_hasCoarser;
   bool                 m_hasFiner;
+  bool                 m_isThisFinestLev;
 
   DisjointBoxLayout    m_grids;
+  LevelData<FArrayBox> m_rho;
+  LevelData<FArrayBox> m_v_field;
+  LevelData<FArrayBox> m_rhoCrse;
 
+  // Level integrator for particles
+  LevelParticle m_levelParticle;
+
+  // Patch Integrator for particles
+  PatchParticle* m_patchParticle;
 private:
 
   // Disallowed for all the usual reasons

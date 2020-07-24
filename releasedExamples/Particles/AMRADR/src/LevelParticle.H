@@ -35,30 +35,6 @@ public:
               const Real&                a_dx,
               const PatchParticle* const a_patchParticleFactory);
 
-  /// Take one timestep for this grid level.
-  template<class P>
-  Real step(ParticleData<P>&                a_levP,
-            const BoxLayoutData<FArrayBox>& a_force,
-            const Real&                     a_time,
-            const Real&                     a_dt,
-            const bool                      a_globalDtNew=false);
-
-  /// 2nd order corrections
-  template<class P>
-  void correct(ParticleData<P>&                a_levP,
-               const BoxLayoutData<FArrayBox>& a_force,
-               const Real&                     a_time,
-               const Real&                     a_dt);
-
-  /// Things to do after the corrector phase
-  template<class P>
-  void postCorrect(ParticleData<P>&  a_levP);
-
-  /// Get maximum Particle speed
-  template<class P>
-  Real getMaxPartSpeed(const ParticleData<P>&  a_levP,
-                       const bool              a_globalDtNew=false);
-
   /// returns the patchParticle pointer
   PatchParticle* getPatchParticlePtr()
   {

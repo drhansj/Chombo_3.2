@@ -88,15 +88,15 @@ void MeshInterp::depositParticleVelocity(FArrayBox& a_v_field,
   switch (a_interpType)
     {
     case NGP:
-      FORT_NGP_DEPOSIT_VELOCITY(CHF_FRA1(a_v_field,0),
+      FORT_NGP_DEPOSIT_VELOCITY(CHF_FRA(a_v_field),
                        CHF_CONST_REALVECT(a_domainLeftEdge),
                        CHF_CONST_REALVECT(a_dx),
                        CHF_CONST_REALVECT(a_position),
                        CHF_CONST_REALVECT(a_velocity));
       break;
     case CIC:
-      FORT_CIC_DEPOSIT_VELOCITY(CHF_FRA1(a_v_field,0),
-                       CHF_CONST_FRA(a_rho),
+      FORT_CIC_DEPOSIT_VELOCITY(CHF_FRA(a_v_field),
+                       CHF_CONST_FRA1(a_rho,0),
                        CHF_CONST_REALVECT(a_domainLeftEdge),
                        CHF_CONST_REALVECT(a_dx),
                        CHF_CONST_REALVECT(a_position),
@@ -104,8 +104,8 @@ void MeshInterp::depositParticleVelocity(FArrayBox& a_v_field,
                        CHF_CONST_REAL(a_mass));
       break;
     case TSC:
-      FORT_TSC_DEPOSIT_VELOCITY(CHF_FRA1(a_v_field,0),
-                       CHF_CONST_FRA(a_rho),
+      FORT_TSC_DEPOSIT_VELOCITY(CHF_FRA(a_v_field),
+                       CHF_CONST_FRA1(a_rho,0),
                        CHF_CONST_REALVECT(a_domainLeftEdge),
                        CHF_CONST_REALVECT(a_dx),
                        CHF_CONST_REALVECT(a_position),

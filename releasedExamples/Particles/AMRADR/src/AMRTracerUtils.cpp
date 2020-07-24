@@ -71,10 +71,14 @@ getAMRLevelTracerFactory(RefCountedPtr<AMRLevelTracerFactory>&  a_fact,
   pp.get("domain_length",domainLength);
 
   Real maxGridSize;
-  pp.get("fixed_box_size", maxGridSize);  
+  pp.get("fixed_box_size", maxGridSize);
+
+  int interpFlag;
+  pp.get("poissonInterpType", interpFlag);
+  InterpType poissonInterpType = (InterpType)interpFlag;
 
   a_fact = RefCountedPtr<AMRLevelTracerFactory>
-    (new AMRLevelTracerFactory(a_advFunc, cfl, domainLength, maxGridSize));
+    (new AMRLevelTracerFactory(a_advFunc, cfl, domainLength, poissonInterpType, maxGridSize));
 
 }
 void
@@ -111,9 +115,14 @@ defineAMR(AMR&                                          a_amr,
 
   Real dt_tolerance_factor = 1.1;
   pp.get("dt_tolerance_factor",dt_tolerance_factor);
+
+  int interpFlag;
+  pp.get("poissonInterpType", interpFlag);
+  InterpType poissonInterpType = (InterpType)interpFlag;
+
   AMR amr;
   a_amr.define(max_level, a_refRat,
-               a_prob_domain,&(*a_fact));
+               a_prob_domain, &(*a_fact));
 
   // set grid generation parameters
   a_amr.maxGridSize(max_grid_size);
@@ -173,7 +182,7 @@ setupAMRHierarchy(Vector<Vector<Box> >& a_hierarchy)
   {
 
     Vector<Box> levelBoxes;
-    
+
     int numPointsLevel = 32*pow(2, l);
     int loCorner = (numPointsLevel - 32) / 2;
     int hiCorner = loCorner + 32 - 1;
@@ -187,7 +196,7 @@ setupAMRHierarchy(Vector<Vector<Box> >& a_hierarchy)
 }
 
 void
-setupAMRForFixedHierarchyRun(AMR& a_amr, 
+setupAMRForFixedHierarchyRun(AMR& a_amr,
                              const Vector<Vector<Box> >& a_hierarchy)
 {
   ParmParse pp;
