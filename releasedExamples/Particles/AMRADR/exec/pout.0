@@ -3,9 +3,20 @@ rotating advection velocity
 262144
 0
 
-coarse time step   0  old time = 0.000000e+00  old dt = 5.394797e-05  wallclocktime = 6.89e-03
+coarse time step   0  old time = 0.000000e+00  old dt = 5.394797e-05  wallclocktime = 1.25e-01
 262144
 0
 
-coarse time step   1  old time = 5.394797e-05  old dt = 5.394797e-05  wallclocktime = 9.38e-03
+coarse time step   1  old time = 5.394797e-05  old dt = 5.394797e-05  wallclocktime = 1.22e-01
+262144
+0
 
+coarse time step   2  old time = 1.078959e-04  old dt = 5.934276e-05  wallclocktime = 1.25e-01
+262144
+0
+
+coarse time step   3  old time = 1.672387e-04  old dt = 6.527704e-05  wallclocktime = 1.22e-01
+Vector 7IntVect: 64 bytes (0 Mb)
+---------------------------------
+Total Unfreed : 64 bytes (0 Mb)
+peak memory usage: 20788582 bytes (19 Mb)

@@ -1,6 +1,6 @@
 cfl = 1.0
 verbosity = 3
-max_step = 100000
+max_step = 100
 #max_time = 0.44202008803019593
 #max_time = 10.6666666666
 #max_time  = 1.33333333333

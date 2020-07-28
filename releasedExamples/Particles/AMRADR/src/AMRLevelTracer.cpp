@@ -167,6 +167,8 @@ advance()
 
   depositMass( m_rho, m_PNew, m_jointParticle);
 
+  //depositVelocity( m_v_field, m_rho, m_PNew, m_jointParticle);
+
   // Update the time and store the new timestep
   m_time += m_dt;
   return computeDt();
@@ -671,7 +673,8 @@ writePlotHeader(HDF5Handle& a_handle) const
   char coords[3] = {'x', 'y', 'z'};
 
   // setup mesh field names
-  int numMeshComps = 2 + CH_SPACEDIM;
+  int numMeshComps = 1 + CH_SPACEDIM;
+  vectNames.push_back("rho");
   for (int dir = 0; dir < CH_SPACEDIM; dir++)
   {
     sprintf(field_name, "velocity_field_%c", coords[dir]);
@@ -829,6 +832,7 @@ void
 AMRLevelTracer::
 writePlotLevel(HDF5Handle& a_handle) const
 {
+  cout<<"Entering writePlotLevel() \n";
   // timer
   CH_TIME("AMRLevelTracer::writePlotLevel");
 
@@ -875,15 +879,16 @@ writePlotLevel(HDF5Handle& a_handle) const
 
   // now write out our particles
   writeParticlesToHDF(a_handle, m_PNew, "particles");
-
+  cout << "Particle Data written \n";
   // write out mesh fields
   LevelData<FArrayBox> outputData;
   int numComps = 1 + CH_SPACEDIM;
   outputData.define(m_grids, numComps, IntVect::Zero);
-
+  cout << "OutputData Data defined\n";
   // do copies
   m_rho.copyTo(Interval(0, 0), outputData, Interval(0, 0));
-  m_v_field.copyTo(Interval(0, CH_SPACEDIM - 1), outputData, Interval(2, CH_SPACEDIM + 1));
+  cout << "rho output complete\n";
+  m_v_field.copyTo(Interval(0, CH_SPACEDIM - 1), outputData, Interval(1, CH_SPACEDIM));
 
   write(a_handle, m_rho.boxLayout());
   write(a_handle, outputData, "data");

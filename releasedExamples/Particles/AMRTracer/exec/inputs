@@ -10,8 +10,8 @@ grid_buffer_size = 1
 periodic_bc = 1 1 1
 #fixed_dt = 1.0
 
-max_level = 0
-n_cell =  512 512 512
+max_level = 3
+n_cell =  81 81 81
 ref_ratio = 2 2 2 2 2 2
 
 fixed_box_size = 4

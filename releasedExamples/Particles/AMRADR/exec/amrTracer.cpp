@@ -35,27 +35,33 @@ void amrTest(const Real& a_stopTime,
   ProblemDomain prob_domain;
   getProblemDomain(prob_domain);
 
+  cout<<"getProblemDomain complete \n";
+
   AdvectionVelocityFunction velFunc;
   getAdvectionVelocityFunction(velFunc);
+  cout<<"getAdvectionVelocityFunction complete \n";
 
   RefCountedPtr<AMRLevelTracerFactory>  amrt_fact;
   getAMRLevelTracerFactory(amrt_fact, velFunc);
+  cout<<"getAMRLevelTracerFactory complete \n";
 
   AMR amr;
   defineAMR(amr, amrt_fact, prob_domain, a_refRat);
-  
+  cout<<"defineAMR complete \n";
+
   Vector<Vector<Box> > amrHierarchy;
   setupAMRHierarchy(amrHierarchy);
+  cout<<"setupAMRHierarchy complete \n";
 
   setupAMRForFixedHierarchyRun(amr, amrHierarchy);
-
+  cout<<"setupAMRForFixedHierarchyRun complete \n";
   // run
   amr.run(a_stopTime, a_nstop);
-
+  cout<<"run complete \n";
   // output last pltfile and statistics
   //cleanup
   amr.conclude();
-  
+  cout<<"conclude complete \n";
 }
 /***************/
 int

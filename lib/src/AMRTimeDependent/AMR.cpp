@@ -756,6 +756,7 @@ void AMR::conclude() const
 // go baby go
 void AMR::run(Real a_max_time, int a_max_step)
 {
+  cout << "entering AMR run \n";
   CH_TIME("AMR::run");
 
   CH_assert(isDefined());
@@ -797,7 +798,7 @@ void AMR::run(Real a_max_time, int a_max_step)
         {
           m_amrlevels[level]->time(m_cur_time);
         }
-
+      cout<<"before writing output files \n";
       // Drop a checkpoint file if it's time.
       if ((m_checkpoint_interval > 0)      &&
           (m_lastcheck_step != m_cur_step) &&
@@ -807,14 +808,14 @@ void AMR::run(Real a_max_time, int a_max_step)
           writeCheckpointFile();
           m_lastcheck_step= m_cur_step;
         }
-
+      cout<<"successful writing checkpoint file";
       // Plot if we've gone enough steps.
       if ((m_plot_interval > 0) &&
           (m_cur_step % m_plot_interval == 0))
         {
           writePlotFile();
         }
-
+      cout<<"successful writing plot file \n";
       // Plot if enough time has passed.
       if ((m_plot_period > 0.0) &&
           (m_cur_time >= m_next_plot_time))
@@ -1737,6 +1738,7 @@ void AMR::initialGrid()
 //-----------------------------------------------------------------------
 void AMR::writePlotFile() const
 {
+  cout <<"\n Entering writePlotFile() \n";
   CH_TIME("AMR::writePlotFile");
 
   CH_assert(m_isDefined);
@@ -1775,15 +1777,16 @@ void AMR::writePlotFile() const
     {
       pout() << header << endl;
     }
-
+  cout << "before writing physics plot header\n";
   // write physics class header data
   m_amrlevels[0]->writePlotHeader(handle);
-
+  cout << "writing plot header in writePlotFile() complete\n";
   // write physics class per-level data
   for (int level = 0; level <= m_finest_level; ++level)
     {
       m_amrlevels[level]->writePlotLevel(handle);
     }
+  cout << "writing plot level in writePlotFile() complete\n";
 
   handle.close();
 #endif
