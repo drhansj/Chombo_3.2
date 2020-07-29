@@ -323,7 +323,7 @@ preRegrid(int a_base_level,
 
   }
   // This level should now be empty
-  CH_assert(countItems() == 0);
+  // CH_assert(countItems() == 0);
 
   // remap outcast on a_base_level
   baseLevelPtr->m_PNew.remapOutcast();
@@ -834,7 +834,7 @@ void
 AMRLevelTracer::
 writePlotLevel(HDF5Handle& a_handle) const
 {
-  cout<<"Entering writePlotLevel() \n";
+  
   // timer
   CH_TIME("AMRLevelTracer::writePlotLevel");
 
@@ -881,15 +881,15 @@ writePlotLevel(HDF5Handle& a_handle) const
 
   // now write out our particles
   writeParticlesToHDF(a_handle, m_PNew, "particles");
-  cout << "Particle Data written \n";
+
   // write out mesh fields
   LevelData<FArrayBox> outputData;
   int numComps = 1 + CH_SPACEDIM;
   outputData.define(m_grids, numComps, IntVect::Zero);
-  cout << "OutputData Data defined\n";
+
   // do copies
   m_rho.copyTo(Interval(0, 0), outputData, Interval(0, 0));
-  cout << "rho output complete\n";
+
   m_v_field.copyTo(Interval(0, CH_SPACEDIM - 1), outputData, Interval(1, CH_SPACEDIM));
 
   write(a_handle, m_rho.boxLayout());

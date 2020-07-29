@@ -1,1 +1,13 @@
 rotating advection velocity
+828 0
+147 1
+49 2
+1024
+0
+
+coarse time step   0  old time = 0.000000e+00  old dt = 1.381068e-02  wallclocktime = 9.76e-04
+1024
+0
+
+coarse time step   1  old time = 1.381068e-02  old dt = 1.381068e-02  wallclocktime = 2.17e-03
+peak memory usage: 130676 bytes (0 Mb)
