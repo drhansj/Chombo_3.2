@@ -21,6 +21,7 @@
 #include "computeSum.H"
 #include "computeNorm.H"
 #include "ParticleIO.H"
+#include "Particle.H"
 #include "AMRLevelTracer.H"
 #include "ParmParse.H"
 #include "MeshInterp.H"
@@ -152,6 +153,7 @@ advance()
       }
 
       li().setPosition(new_position);
+      li().setVelocity(velocity);
     }
   }
 
@@ -167,7 +169,7 @@ advance()
 
   depositMass( m_rho, m_PNew, m_jointParticle);
 
-  //depositVelocity( m_v_field, m_rho, m_PNew, m_jointParticle);
+  depositVelocity( m_v_field, m_rho, m_PNew, m_jointParticle);
 
   // Update the time and store the new timestep
   m_time += m_dt;

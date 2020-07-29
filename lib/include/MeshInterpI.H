@@ -43,7 +43,10 @@ void MeshInterp::depositVelocity(const List<P>& a_particleList,
     const P& this_particle = lit();
     const RealVect& this_x = this_particle.position();
     const Real& this_m = this_particle.mass();
+    cout << "mass " << this_m << "\n";
     const RealVect& this_velocity = this_particle.velocity();
+    cout << "x-velocity " << this_velocity[0] <<"\n" ;
+    cout << "y-velocity " << this_velocity[0] <<"\n" ;
     depositParticleVelocity(a_v_field,
                             a_rho,
                             m_domainLeftEdge,

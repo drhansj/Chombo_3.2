@@ -154,9 +154,9 @@ protected:
 };
 
 template <class P>
-ParticleData<P>::ParticleData() 
-  : 
-  LayoutData<ListBox<P> >() 
+ParticleData<P>::ParticleData()
+  :
+  LayoutData<ListBox<P> >()
 {
   m_isDefined = false;
 }
@@ -233,12 +233,12 @@ size_t ParticleData<P>::numParticles() const
     {
       size_t countLocal;
       countLocal = numParticlesLocal();
-      
+
       // gather all countLocals onto process 0
       int srcProc = 0;
       Vector<size_t> allCounts(numProc());
       gather(allCounts, countLocal, srcProc);
-      
+
       size_t count = 0;
       if(procID() == srcProc)
         {
@@ -247,7 +247,7 @@ size_t ParticleData<P>::numParticles() const
               count += allCounts[ivec];
             }
         }
-      
+
       // broadcast right answer to all procs
       broadcast(count, srcProc);
       return count;
@@ -277,12 +277,12 @@ size_t ParticleData<P>::numValid() const
     {
       size_t countLocal;
       countLocal = numValidLocal();
-      
+
       // gather all countLocals onto process 0
       int srcProc = 0;
       Vector<size_t> allCounts(numProc());
       gather(allCounts, countLocal, srcProc);
-      
+
       size_t count = 0;
       if(procID() == srcProc)
         {
@@ -291,7 +291,7 @@ size_t ParticleData<P>::numValid() const
               count += allCounts[ivec];
             }
         }
-      
+
       // broadcast right answer to all procs
       broadcast(count, srcProc);
       return count;
@@ -317,12 +317,12 @@ size_t ParticleData<P>::numOutcast() const
     {
       size_t countLocal;
       countLocal = numOutcastLocal();
-      
+
       // gather all countLocals onto process 0
       int srcProc = 0;
       Vector<size_t> allCounts(numProc());
       gather(allCounts, countLocal, srcProc);
-      
+
       size_t count = 0;
       if(procID() == srcProc)
         {
@@ -346,8 +346,8 @@ List<P>& ParticleData<P>::outcast()
 
 template <class P>
 bool ParticleData<P>::isClosed() const
-{ 
-  return m_outcast.isEmpty(); 
+{
+  return m_outcast.isEmpty();
 }
 
 template <class P>
@@ -565,7 +565,7 @@ IntVect ParticleData<P>::enforcePeriodic(const IntVect& a_index) const
             {
               new_index[d] += dim[d];
             }
-      
+
           if (a_index[d]  > hi[d])
             {
               new_index[d] -= dim[d];
@@ -589,8 +589,8 @@ void ParticleData<P>::fillGhosts(ParticleData<P>& a_particlesWithGhosts,
     RealVect domLE = ((RealVect) domLo) * m_meshSpacing + m_origin;
     RealVect domRE = ((RealVect) domHi + IntVect::Unit) * m_meshSpacing + m_origin;
     RealVect domainWidth = domRE - domLE;
-    
-    // Because we are dealing with fixed size BoxLayouts, each box has a unique IntVect index. 
+
+    // Because we are dealing with fixed size BoxLayouts, each box has a unique IntVect index.
     // Here, we construct a mapping between those IntVect indices, the integer indices, and the
     // process numbers.
     map<IntVect, boxids, CompIntVect> IntVectToBoxIDMap;
@@ -598,7 +598,7 @@ void ParticleData<P>::fillGhosts(ParticleData<P>& a_particlesWithGhosts,
       {
         const Box sbox = coarsen(grids[lit],
                                  m_fixedBoxSize);
-        
+
         IntVectToBoxIDMap[sbox.smallEnd()].idx = grids.index(lit());
         IntVectToBoxIDMap[sbox.smallEnd()].pid = grids.procID(lit());
       }
@@ -615,10 +615,10 @@ void ParticleData<P>::fillGhosts(ParticleData<P>& a_particlesWithGhosts,
         const Box& thisBox = grids[dit];
         const ListBox<P>& thisListBox = (*this)[dit];
         unsigned thisIndex = grids.index(dit());
-        
-        // theseGhosts stores the particles that will need to be copied and sent elsewhere 
+
+        // theseGhosts stores the particles that will need to be copied and sent elsewhere
         List<P> theseGhosts;
-        thisListBox.getInvalid(theseGhosts, grow(thisBox, -a_numGhost)); 
+        thisListBox.getInvalid(theseGhosts, grow(thisBox, -a_numGhost));
         const RealVect boxSpacing = m_meshSpacing*(Real)m_fixedBoxSize;
 
         // keep track of where we are sending each ghost to avoid duplication
@@ -631,7 +631,7 @@ void ParticleData<P>::fillGhosts(ParticleData<P>& a_particlesWithGhosts,
             alreadySentTo.clear();
 
             D_TERM6( for (int i = -1; i < 2; i++) {,
-                       for (int j = -1; j < 2; j++) {, 
+                       for (int j = -1; j < 2; j++) {,
                          for (int k = -1; k < 2; k++) {,
                            for (int l = -1; l < 2; l++) {,
                              for (int m = -1; m < 2; m++) {,
@@ -647,10 +647,10 @@ void ParticleData<P>::fillGhosts(ParticleData<P>& a_particlesWithGhosts,
                                                 m_origin);
 
                     IntVect destIntVectIndex;
-                    destIntVectIndex = locateBin(shiftedPosition, 
+                    destIntVectIndex = locateBin(shiftedPosition,
                                                  boxSpacing,
                                                  m_origin);
-        
+
                     bool doSend = false;
                     if (destIntVectIndex != srcIntVectIndex)
                       {
@@ -659,7 +659,7 @@ void ParticleData<P>::fillGhosts(ParticleData<P>& a_particlesWithGhosts,
 
                     IntVect periodicIntVectIndex;
                     periodicIntVectIndex = enforcePeriodic(destIntVectIndex);
-                    
+
                     IntVectToBoxIDIterator = IntVectToBoxIDMap.find(periodicIntVectIndex);
                     unsigned destPID = IntVectToBoxIDIterator->second.pid;
                     unsigned destBoxID = IntVectToBoxIDIterator->second.idx;
@@ -678,9 +678,9 @@ void ParticleData<P>::fillGhosts(ParticleData<P>& a_particlesWithGhosts,
                         alreadySentTo.push_back(destBoxID);
                         P p = pi();
 
-                        // if the particle is being shipped across the domain due to 
+                        // if the particle is being shipped across the domain due to
                         // periodic boundary conditions, we shift its position here
-                        // so that a naive distance calculation between the particle 
+                        // so that a naive distance calculation between the particle
                         // and a point on its box will return the *shortest* distance
                         // between them.
                         if (periodicIntVectIndex != destIntVectIndex)
@@ -697,7 +697,7 @@ void ParticleData<P>::fillGhosts(ParticleData<P>& a_particlesWithGhosts,
                               }
                             p.setPosition(x);
                           }
-                        
+
                         ghostsToSend[destPID][destBoxID].add(p);
                       }
                     D_TERM6( }, }, }, }, }, })
@@ -712,7 +712,7 @@ void ParticleData<P>::fillGhosts(ParticleData<P>& a_particlesWithGhosts,
     for (ghostMapIterator = ghostsToSend[myPID].begin(); ghostMapIterator != ghostsToSend[myPID].end(); ++ghostMapIterator)
       {
         unsigned myBoxID = ghostMapIterator->first;
-        List<P>& myGhosts = ghostMapIterator->second; 
+        List<P>& myGhosts = ghostMapIterator->second;
         localGhosts[myBoxID].catenate(myGhosts);
       }
     ghostsToSend[myPID].clear();
