@@ -9,6 +9,8 @@
 #endif
 
 #include <iomanip>
+#include <iostream>
+#include <fstream>
 
 #include "parstream.H"
 
@@ -25,6 +27,9 @@
 #include "AMRLevelTracer.H"
 #include "ParmParse.H"
 #include "MeshInterp.H"
+
+#include <sstream>
+#include <string>
 
 #include "NamespaceHeader.H"
 
@@ -112,65 +117,105 @@ advance()
     }
 
   // shift all the particles according to the velocity field.
-  RealVect shift;
+  // RealVect shift;
+
   RealVect velocity;
+  int t= (int)m_time;
+  cout <<"Displaying m_time" <<endl;
+  cout << t<< endl;
 
-  m_maxVelocityLocal = 0.0;
-  DataIterator dit(m_grids);
-  for (dit.begin(); dit.ok(); ++dit)
+  int n_par = 8988;
+  string filename="t";
+  double t_arr[1][n_par];
+  double x_arr[1][n_par];
+  double y_arr[1][n_par];
+  double z_arr[1][n_par];
+  double f_arr[1][n_par];
+  double c_arr[1][n_par];
+  double a_arr[1][n_par];
+
+  filename= filename + to_string(t+1)+".txt";
+  ifstream myFileStream;
+  myFileStream.open(filename);
+  if(!myFileStream){
+      cout<<"File failed to open"<<endl;
+  }
+  cout<<filename<<endl;
+  string tt,x,y,z,f,c,a;
+  double t_d,x_d,y_d,z_d,f_d,c_d,a_d;
+  string line;
+  int count =0;
+  while (getline(myFileStream,line)){
+    stringstream ss(line);
+    getline(ss,tt,',');
+    t_d= std::stod(tt);
+    getline(ss,x,',');
+    x_d= std::stod(x);
+    getline(ss,y,',');
+    y_d= std::stod(y);
+    getline(ss,z,',');
+    z_d= std::stod(z);
+    getline(ss,f,',');
+    f_d= std::stod(f);
+    getline(ss,c,',');
+    c_d= std::stod(c);
+    getline(ss,a,',');
+    a_d= std::stod(a);
+    t_arr[0][count]=t_d;
+    x_arr[0][count]=x_d;
+    y_arr[0][count]=y_d;
+    z_arr[0][count]=z_d;
+    f_arr[0][count]=f_d;
+    c_arr[0][count]=c_d;
+    a_arr[0][count]=a_d;
+    count= count+1;
+  }
+  myFileStream.close();
+  m_PNew.clear();
+  if (m_level == 0)
   {
-    for (ListIterator<Particle> li (m_PNew[dit].listItems()); li.ok(); ++li)
+    CH_XD::List<Particle> thisList;
+    DataIterator dit(m_grids);
+    for (dit.reset(); dit.ok(); ++dit)
     {
-      RealVect x=li().position();
-
-      // grab velocity at Particle location
-      Real velocityMag = 0.0;
-      for (int dir = 0; dir < CH_SPACEDIM; ++dir)
-      {
-        velocity[dir] = m_advFunc(x, dir);
-        velocityMag += velocity[dir]*velocity[dir];
-      }
-
-      velocityMag = sqrt(velocityMag);
-      m_maxVelocityLocal = max(m_maxVelocityLocal, velocityMag);
-
-      shift = velocity * m_dt;
-
-      RealVect new_position = x + shift;
-
-      // enforce periodic boundary conditions
-      for (int d = 0; d < CH_SPACEDIM; d++)
-      {
-        if (new_position[d] < m_origin[d])
-        {
-          new_position[d] += m_domainLength;
+      const Box thisBox = m_grids.get(dit);
+      BoxIterator bit(thisBox);
+      RealVect hiC = ((RealVect)thisBox.bigEnd()+1)*m_dx;
+      RealVect loC = ((RealVect)thisBox.smallEnd())*m_dx;
+      for (int ct =0; ct < count; ct++){
+        if (x_arr[0][ct]>=loC[0] && x_arr[0][ct]<=hiC[0]){
+          if (y_arr[0][ct]>=loC[1] && y_arr[0][ct]<=hiC[1]){
+            if (z_arr[0][ct]>=loC[2] && z_arr[0][ct]<=hiC[2]){
+              RealVect position;
+              position[0]=x_arr[0][ct];
+              position[1]=y_arr[0][ct];
+              position[2]=z_arr[0][ct];
+              Particle particle(1.0,position);
+              thisList.append(particle);
+              }
+            }
+          }
         }
-
-        if (new_position[d]  > m_domainLength + m_origin[d])
-        {
-          new_position[d] -= m_domainLength;
-        }
-      }
-
-      li().setPosition(new_position);
-      li().setVelocity(velocity);
+      m_PNew[dit].addItemsDestructive(thisList);
     }
   }
-
-  // now collect any invalid particles
-  for (dit.reset(); dit.ok(); ++dit)
+  else
   {
-    m_PNew[dit].getInvalidDestructive(m_PNew.outcast(), m_grids[dit]);
+    // particles have already been created, grab them from the coarser level
+    AMRLevelTracer* amrPartCoarserPtr = getCoarserLevel();
+
+    collectValidParticles(m_PNew.outcast(),
+                          amrPartCoarserPtr->m_PNew,
+                          m_PVR.mask(),
+                          m_meshSpacing,
+                          amrPartCoarserPtr->refRatio());
+
+    // put the particles in the proper bins
+    m_PNew.remapOutcast();
+
   }
-
-  // rebin
-  m_PNew.gatherOutcast();
-  m_PNew.remapOutcast();
-
   depositMass( m_rho, m_PNew, m_jointParticle);
-
-  depositVelocity( m_v_field, m_rho, m_PNew, m_jointParticle);
-
+  //depositVelocity( m_v_field, m_rho, m_PNew, m_jointParticle);
   // Update the time and store the new timestep
   m_time += m_dt;
   return computeDt();
@@ -509,7 +554,6 @@ void
 AMRLevelTracer::
 initialGrid(const Vector<Box>& a_newGrids)
 {
-
   // Save original grids and load balance
   m_level_grids = a_newGrids;
   Vector<int> procs;
@@ -543,37 +587,86 @@ initialGrid(const Vector<Box>& a_newGrids)
   }
 }
 
-/*******/
 void
 AMRLevelTracer::
 initialData()
 {
+  int t = 0;
+  int n_par = 8988;
+  string filename="t";
+  double t_arr[1][n_par];
+  double x_arr[1][n_par];
+  double y_arr[1][n_par];
+  double z_arr[1][n_par];
+  double f_arr[1][n_par];
+  double c_arr[1][n_par];
+  double a_arr[1][n_par];
 
+  filename= filename + to_string(t+1)+".txt";
+  ifstream myFileStream;
+  myFileStream.open(filename);
+  if(!myFileStream){
+      cout<<"File failed to open"<<endl;
+  }
+  string tt,x,y,z,f,c,a;
+  double t_d,x_d,y_d,z_d,f_d,c_d,a_d;
+  string line;
+  int count =0;
+  while (getline(myFileStream,line)){
+    stringstream ss(line);
+    getline(ss,tt,',');
+    t_d= std::stod(tt);
+    getline(ss,x,',');
+    x_d= std::stod(x);
+    getline(ss,y,',');
+    y_d= std::stod(y);
+    getline(ss,z,',');
+    z_d= std::stod(z);
+    getline(ss,f,',');
+    f_d= std::stod(f);
+    getline(ss,c,',');
+    c_d= std::stod(c);
+    getline(ss,a,',');
+    a_d= std::stod(a);
+    t_arr[0][count]=t_d;
+    x_arr[0][count]=x_d;
+    y_arr[0][count]=y_d;
+    z_arr[0][count]=z_d;
+    f_arr[0][count]=f_d;
+    c_arr[0][count]=c_d;
+    a_arr[0][count]=a_d;
+    count= count+1;
+  }
+  myFileStream.close();
   if (m_level == 0)
   {
-
-    // if we are on the first level, put a particle at each cell center.
     CH_XD::List<Particle> thisList;
     DataIterator dit(m_grids);
     for (dit.reset(); dit.ok(); ++dit)
     {
       const Box thisBox = m_grids.get(dit);
       BoxIterator bit(thisBox);
-      for (bit.begin(); bit.ok(); ++bit)
-      {
-        IntVect iv = bit();
-        RealVect position = ((RealVect)iv + 0.5)*m_dx;
-        Particle particle(1.0, position);
-        thisList.append(particle);
-      }
-
+      RealVect hiC = ((RealVect)thisBox.bigEnd()+1)*m_dx;
+      RealVect loC = ((RealVect)thisBox.smallEnd())*m_dx;
+      for (int ct =0; ct < count; ct++){
+        if (x_arr[0][ct]>=loC[0] && x_arr[0][ct]<=hiC[0]){
+          if (y_arr[0][ct]>=loC[1] && y_arr[0][ct]<=hiC[1]){
+            if (z_arr[0][ct]>=loC[2] && z_arr[0][ct]<=hiC[2]){
+              RealVect position;
+              position[0]=x_arr[0][ct];
+              position[1]=y_arr[0][ct];
+              position[2]=z_arr[0][ct];
+              Particle particle(1.0,position);
+              thisList.append(particle);
+              }
+            }
+          }
+        }
       m_PNew[dit].addItemsDestructive(thisList);
     }
   }
-
   else
   {
-
     // particles have already been created, grab them from the coarser level
     AMRLevelTracer* amrPartCoarserPtr = getCoarserLevel();
 
@@ -587,6 +680,8 @@ initialData()
     m_PNew.remapOutcast();
 
   }
+  depositMass( m_rho, m_PNew, m_jointParticle);
+  //depositVelocity( m_v_field, m_rho, m_PNew, m_jointParticle);
 }
 
 /*******/
@@ -757,7 +852,7 @@ void AMRLevelTracer::depositMass(LevelData<FArrayBox>&       a_rho,
   // Deposit particles
   if (a_P.isDefined())
     {
-      CH_assert(a_P.isClosed());
+      //CH_assert(a_P.isClosed());
       CH_TIME("depositMass::particles");
 
       for (DataIterator di(m_grids); di.ok(); ++di)
@@ -834,7 +929,7 @@ void
 AMRLevelTracer::
 writePlotLevel(HDF5Handle& a_handle) const
 {
-  
+
   // timer
   CH_TIME("AMRLevelTracer::writePlotLevel");
 
@@ -902,7 +997,7 @@ Real
 AMRLevelTracer::
 computeDt()
 {
-
+/*
   // m_maxVelocityLocal stores the max velocity on each proc
   // gather and broadcast here
 
@@ -923,6 +1018,8 @@ computeDt()
   broadcast(maxVelocity, srcProc);
 
   return m_cfl * m_dx / maxVelocity;
+  */
+  return 1.0;
 }
 
 /*******/
