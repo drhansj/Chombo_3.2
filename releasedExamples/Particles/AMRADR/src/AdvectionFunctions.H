@@ -13,7 +13,6 @@
 
 #include "IntVect.H"
 #include "RealVect.H"
-#include "math.h"
 
 #include "NamespaceHeader.H"
 

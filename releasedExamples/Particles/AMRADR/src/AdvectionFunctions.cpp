@@ -13,8 +13,6 @@
 
 #include "NamespaceHeader.H"
 
-#include "math.h"
-
 /// handy example--constant flow
 Real constantAdvection(const RealVect& a_point,
                        const int&      a_velComp)
@@ -31,23 +29,22 @@ Real rotatingAdvection(const RealVect& a_point,
   center *= 0.5;
   Real dist = 0;
   RealVect offset = a_point;
-  //offset -= center;
+  offset -= center;
   for (int idir = 0; idir < SpaceDim; idir++)
     {
       dist += offset[idir]*offset[idir];
     }
 
   Real retval;
-  /*
-  if (dist < 0.25)
+  if (dist < 0.5)
     {
       if (a_velComp == 0)
         {
-          retval = 1;
+          retval = offset[1]/dist;
         }
       else if (a_velComp == 1)
         {
-          retval = 0;
+          retval = -offset[0]/dist;
         }
       else
         {
@@ -57,16 +54,6 @@ Real rotatingAdvection(const RealVect& a_point,
   else
     {
       retval = 0;
-    }
-  */
-  //offset +=center;
-  if (a_velComp == 0)
-    {
-      retval = cos(2*M_PI*offset[0])*sin(2*M_PI*offset[1]);
-    }
-    else if (a_velComp == 1)
-    {
-      retval = -sin(2*M_PI*offset[0])*cos(2*M_PI*offset[1]);
     }
   return retval;
 }
